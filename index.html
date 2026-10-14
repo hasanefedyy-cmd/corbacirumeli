@@ -1,26 +1,147 @@
-<!doctype html>
-<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#183b2b"><title>Çorbacı Menü</title>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#183b2b">
+<title>Tarihi Rumeli Çorbacısı - Menü</title>
 <style>
-:root{--g:#183b2b;--cream:#fff9ed;--ink:#20251f;--muted:#687067;--line:#e9e0d0}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}header{background:var(--g);color:#fff;text-align:center;padding:30px 16px;border-bottom:5px solid #d7a84a}header small{color:#f1d9a1;font-weight:800;letter-spacing:.18em;text-transform:uppercase}h1{font-size:clamp(2rem,8vw,3.1rem);margin:8px 0 5px}header p{margin:0;color:#e5eee7}main{max-width:720px;margin:auto;padding:22px 15px 40px}.heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.heading h2{margin:0;font-size:1.25rem}.pill{background:#f3e7cd;color:#6b4a12;border-radius:99px;padding:6px 10px;font-size:.75rem;font-weight:800}.categories{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 12px;margin-bottom:4px}.category{flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--g);padding:10px 14px;border-radius:999px;font:inherit;font-size:.9rem;font-weight:800;cursor:pointer}.category.active{background:var(--g);border-color:var(--g);color:#fff}.menu{display:grid;gap:13px}.item{display:flex;align-items:center;gap:14px;background:white;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 4px 14px #392a0a08}.bowl{width:64px;height:64px;flex:0 0 64px;display:grid;place-items:center;background:#f7ead1;border-radius:16px;font-size:2rem}.info{flex:1;min-width:0}.item h3{margin:0 0 5px;font-size:1.04rem}.item p{margin:0;color:var(--muted);font-size:.88rem}.price{font-size:1.1rem;font-weight:900;color:var(--g);white-space:nowrap}footer{text-align:center;color:var(--muted);font-size:.82rem;padding:20px 8px 5px}.admin-link{display:block;margin:18px auto 0;border:0;background:transparent;color:#858a82;text-decoration:underline;text-underline-offset:4px;font-size:.82rem;padding:8px;cursor:pointer}.backdrop{display:none;position:fixed;inset:0;background:#0c1b12b8;align-items:center;justify-content:center;padding:14px;z-index:3}.backdrop.show{display:flex}.modal{width:min(460px,100%);max-height:90vh;overflow:auto;background:#fffdf8;border-radius:20px;padding:22px;box-shadow:0 20px 60px #0004}.modal h2{margin:0 0 7px;color:var(--g)}.muted{color:var(--muted);font-size:.9rem}.field{display:grid;gap:6px;margin:13px 0}.field label{font-weight:750;font-size:.9rem}.field input,.field select{width:100%;padding:12px;border:1px solid #d9d6cc;border-radius:10px;font:inherit}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.btn{border:0;border-radius:11px;padding:11px 15px;font:inherit;font-weight:800;cursor:pointer}.btn:disabled{opacity:.6;cursor:wait}.primary{background:var(--g);color:white}.secondary{background:#eee9dd;color:var(--ink)}.danger{background:#fae5df;color:#8b2e20}.notice{font-size:.82rem;background:#eaf4e9;color:#234d2d;padding:10px 12px;border-radius:10px;margin:12px 0}.list{display:grid;gap:9px;margin-top:12px}.row{display:flex;align-items:center;gap:7px;border:1px solid var(--line);padding:10px;border-radius:12px}.rowname{flex:1;min-width:0}.row small{display:block;color:var(--muted)}.row button{padding:8px 9px;border:0;border-radius:8px;cursor:pointer;font-weight:700}.error{color:#a42d20;font-size:.9rem;margin-top:8px;white-space:pre-wrap}.status{font-size:.9rem;color:var(--muted);padding:12px 2px}@media(min-width:600px){main{padding-top:28px}.item{padding:18px}}
-</style></head><body>
-<header> <h1>TARİHİ RUMELİ ÇORBACISI</h1><p>İçinizi ısıtan lezzetler</p></header>
-<main><div class="heading"><h2 id="sectionTitle">Çorbalar</h2><span class="pill">AFİYET OLSUN</span></div><nav class="categories" id="categories" aria-label="Menü kategorileri"></nav><section id="menu" class="menu" aria-live="polite"><p class="status">Menü yükleniyor…</p></section><footer>Fiyatlar Türk lirasıdır (TL).</footer><button class="admin-link" id="openLogin">Yönetici girişi</button></main>
-<div class="backdrop" id="login"><div class="modal"><h2>Yönetici Girişi</h2><p class="muted">Menüyü düzenlemek için yönetici şifreni gir.</p><form id="loginForm"><div class="field"><label for="password">Şifre</label><input id="password" type="password" autocomplete="current-password" required></div><div id="error" class="error" role="alert"></div><div class="actions"><button class="btn primary" id="loginBtn">Giriş yap</button><button class="btn secondary" type="button" data-close="login">Vazgeç</button></div></form></div></div>
-<div class="backdrop" id="admin"><div class="modal"><h2>Menüyü Düzenle</h2><p class="muted">Ürün ekle, kategori seç, fiyat değiştir veya sil.</p><div class="notice">Kaydedilen değişiklikler ortak veritabanına kaydedilir ve diğer cihazlarda görünür.</div><form id="itemForm"><input id="editId" type="hidden"><div class="field"><label for="name">Ürün adı</label><input id="name" maxlength="80" required placeholder="Örn. Tavuk suyu"></div><div class="field"><label for="category">Kategori</label><select id="category" required><option>Çorbalar</option><option>Pideler</option><option>Izgaralar</option><option>İçecekler</option><option>Tatlılar</option></select></div><div class="field"><label for="price">Fiyat (TL)</label><input id="price" type="number" min="0" max="100000" step="0.01" required placeholder="150"></div><div id="adminError" class="error" role="alert"></div><div class="actions"><button class="btn primary" id="saveBtn">Menüye ekle</button><button class="btn secondary" type="button" id="clearBtn">Temizle</button></div></form><h3>Mevcut ürünler</h3><div id="list" class="list"></div><div class="actions"><button class="btn secondary" id="logout">Çıkış yap</button><button class="btn secondary" type="button" data-close="admin">Kapat</button></div></div></div>
+*{box-sizing:border-box}body{margin:0;background:#fff9ed;color:#252820;font-family:Arial,sans-serif}header{background:#183b2b;color:white;text-align:center;padding:28px 12px;border-bottom:5px solid #d7a84a}header small{color:#f3dca8;letter-spacing:3px;font-weight:bold}h1{font-size:clamp(25px,6vw,40px);margin:12px 0}header p{margin:0;color:#e0eadf}main{max-width:760px;margin:auto;padding:20px 14px 35px}.heading{display:flex;align-items:center;justify-content:space-between;gap:10px}.heading h2{font-size:22px}.badge{background:#f2e5c7;color:#694b16;border-radius:30px;padding:8px 12px;font-size:12px;font-weight:bold}.categories{display:flex;gap:8px;overflow-x:auto;padding:5px 0 15px}.category{flex-shrink:0;padding:11px 15px;border:1px solid #e5dccb;border-radius:30px;background:white;color:#183b2b;font-weight:bold;cursor:pointer}.category.active{background:#183b2b;color:white}.menu{display:grid;gap:12px}.item{display:flex;align-items:center;gap:13px;background:white;border:1px solid #e8dfd0;border-radius:16px;padding:15px}.food-icon{width:58px;height:58px;flex-shrink:0;border-radius:14px;background:#f7ead1;display:grid;place-items:center;font-size:30px}.details{flex:1;min-width:0}.details h3{font-size:16px;margin:0 0 6px}.details p{font-size:12px;color:#73776f;margin:0}.price{color:#183b2b;font-size:17px;font-weight:bold;white-space:nowrap}.qty-controls{display:flex;align-items:center;gap:9px;margin-top:12px}.qty-btn{width:34px;height:34px;border:0;border-radius:9px;background:#183b2b;color:#fff;font-size:21px;font-weight:bold;cursor:pointer}.qty-number{min-width:20px;text-align:center;font-weight:bold}.status{padding:15px 0;line-height:1.6;overflow-wrap:anywhere}.error{color:#a52b1e}button{font-family:inherit}footer{text-align:center;color:#777;font-size:12px;padding:25px 5px}.admin-link{display:block;margin:8px auto;border:0;background:transparent;color:#777;text-decoration:underline;padding:10px;cursor:pointer}.cart{margin-top:25px;padding:18px;background:#183b2b;color:white;border-radius:16px;box-shadow:0 5px 22px #0002}.cart h2{margin:0 0 12px}.cart-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #ffffff30}.cart-row span:first-child{overflow-wrap:anywhere}.cart-total{display:flex;justify-content:space-between;gap:10px;font-size:20px;margin:17px 0}.cart-note{display:block;width:100%;min-height:75px;padding:12px;border:1px solid #d8d2c5;border-radius:9px;font:inherit;resize:vertical;margin:10px 0 14px}.whatsapp-btn{width:100%;padding:14px;background:#25d366;color:white;border:0;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer}.cart-hint{font-size:12px;color:#e0eadf;line-height:1.5;margin-bottom:0}.overlay{display:none;position:fixed;z-index:5;inset:0;background:#0009;align-items:center;justify-content:center;padding:12px}.overlay.show{display:flex}.modal{width:100%;max-width:520px;max-height:90vh;overflow:auto;background:#fffdf8;border-radius:18px;padding:20px}.modal h2{color:#183b2b;margin-top:0}.field{margin:13px 0}.field label{display:block;font-size:14px;font-weight:bold;margin-bottom:6px}.field input,.field select{width:100%;padding:12px;border:1px solid #d8d2c5;border-radius:9px;font-size:16px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.btn{padding:11px 14px;border:0;border-radius:9px;font-weight:bold;cursor:pointer}.btn:disabled{opacity:.6}.primary{background:#183b2b;color:white}.secondary{background:#eee8dc;color:#252820}.danger{background:#f8e0db;color:#8e241a}.error-text{color:#a52b1e;font-size:13px;white-space:pre-wrap}.product-row{display:flex;align-items:center;gap:8px;border:1px solid #e8dfd0;border-radius:10px;padding:9px;margin:8px 0}.product-name{flex:1;min-width:0;overflow-wrap:anywhere;font-size:14px}.product-name small{display:block;color:#777;margin-top:4px}.product-row button{border:0;border-radius:7px;padding:8px;cursor:pointer}.notice{background:#e9f3e7;padding:10px;border-radius:8px;font-size:13px}@media(max-width:390px){.item{gap:9px;padding:11px}.food-icon{width:45px;height:45px;font-size:25px}.price{font-size:14px}}
+</style>
+</head>
+<body>
+<header><small>TARİHİ RUMELİ</small><h1>ÇORBACI MENÜSÜ</h1><p>İçinizi ısıtan lezzetler</p></header>
+<main>
+  <div class="heading"><h2 id="sectionTitle">Çorbalar</h2><span class="badge">AFİYET OLSUN</span></div>
+  <nav class="categories" id="categories"></nav>
+  <section id="menu" class="menu" aria-live="polite"><p class="status">Menü yükleniyor…</p></section>
+  <section class="cart" id="orderCart">
+    <h2>🛒 Siparişin</h2><div id="cartItems">Henüz ürün seçmedin.</div>
+    <div class="cart-total"><span>Toplam</span><strong id="cartTotal">0 TL</strong></div>
+    <div class="field"><label for="tableNumber">Masa numarası (isteğe bağlı)</label><input id="tableNumber" maxlength="30" placeholder="Örn. Masa 4" /></div>
+    <label for="orderNote">Sipariş notu (isteğe bağlı)</label>
+    <textarea class="cart-note" id="orderNote" placeholder="Örn. Kendi suyunda olsun, acısız olsun..."></textarea>
+    <button class="whatsapp-btn" id="whatsappOrder" type="button">WhatsApp ile Sipariş Ver</button>
+    <p class="cart-hint">WhatsApp açıldığında sipariş mesajını göndermek için Gönder düğmesine basmalısın.</p>
+  </section>
+  <footer>Fiyatlar Türk lirasıdır (TL).</footer><button class="admin-link" id="openLogin">Yönetici girişi</button>
+</main>
+<div class="overlay" id="loginOverlay"><div class="modal"><h2>Yönetici Girişi</h2><form id="loginForm"><div class="field"><label for="password">Yönetici şifresi</label><input id="password" type="password" required autocomplete="current-password"></div><div id="loginError" class="error-text"></div><div class="actions"><button class="btn primary" id="loginButton">Giriş yap</button><button class="btn secondary" type="button" data-close="loginOverlay">Vazgeç</button></div></form></div></div>
+<div class="overlay" id="adminOverlay"><div class="modal"><h2>Menü Yönetimi</h2><p class="notice">Kaydedilen değişiklikler sunucu destekliyorsa bütün ziyaretçilere yansır.</p>
+<form id="productForm"><input id="productId" type="hidden"><div class="field"><label for="productName">Ürün adı</label><input id="productName" maxlength="100" required></div><div class="field"><label for="productCategory">Kategori</label><select id="productCategory"><option>Çorbalar</option><option>Pideler</option><option>Izgaralar</option><option>İçecekler</option><option>Tatlılar</option></select></div><div class="field"><label for="productPrice">Fiyat (TL)</label><input id="productPrice" type="number" min="0" step="0.01" required></div><div id="saveError" class="error-text"></div><div class="actions"><button class="btn primary" id="saveButton">Ürün ekle</button><button class="btn secondary" type="button" id="clearForm">Temizle</button></div></form>
+<h3>Mevcut ürünler</h3><div id="productList"></div><div class="actions"><button class="btn secondary" id="logoutButton" type="button">Çıkış yap</button><button class="btn secondary" type="button" data-close="adminOverlay">Kapat</button></div></div></div>
 <script>
-(()=>{'use strict';
-const API='/api/menu',categories=['Çorbalar','Pideler','Izgaralar','İçecekler','Tatlılar'],emojis={'Çorbalar':'🍲','Pideler':'🫓','Izgaralar':'🍢','İçecekler':'🥤','Tatlılar':'🍮'},$=id=>document.getElementById(id);let items=[],activeCategory='Çorbalar',adminPassword='';
-function money(n){return new Intl.NumberFormat('tr-TR',{maximumFractionDigits:2}).format(Number(n)||0)+' TL'}
-async function api(url,options={}){const headers={'Content-Type':'application/json',...(options.headers||{})};if(adminPassword)headers['x-admin-password']=adminPassword;let r;try{r=await fetch(url,{...options,headers,cache:'no-store'})}catch{throw new Error('Sunucuya bağlanılamadı. İnternet bağlantısını kontrol edin.')}const t=await r.text();let d=null;try{d=t?JSON.parse(t):null}catch{}if(!r.ok)throw new Error(d?.error||(r.status===404?'API adresi bulunamadı. Netlify yönlendirmesini kontrol edin.':'İstek başarısız ('+r.status+').'));if(d===null&&t)throw new Error('Sunucudan beklenmeyen yanıt geldi. Netlify yönlendirmesini kontrol edin.');return d}
-async function loadMenu(){ $('menu').innerHTML='<p class="status">Menü yükleniyor…</p>';try{const d=await api(API);if(!Array.isArray(d))throw new Error('Menü verisi okunamadı.');items=d.map(x=>({...x,id:x.id,name:String(x.name),category:categories.includes(x.category)?x.category:'Çorbalar',price:Number(x.price)}));render();renderList()}catch(e){$('menu').replaceChildren();const p=document.createElement('p');p.className='error';p.textContent='Menü yüklenemedi: '+e.message;$('menu').append(p)}}
-function renderCategories(){const nav=$('categories');nav.replaceChildren();categories.forEach(c=>{const b=document.createElement('button');b.type='button';b.className='category'+(c===activeCategory?' active':'');b.textContent=c;b.setAttribute('aria-pressed',String(c===activeCategory));b.onclick=()=>{activeCategory=c;render()};nav.append(b)});$('sectionTitle').textContent=activeCategory}
-function render(){renderCategories();const m=$('menu');m.replaceChildren();const visible=items.filter(x=>x.category===activeCategory);if(!visible.length){const p=document.createElement('p');p.className='muted';p.textContent='Bu kategoride henüz ürün yok.';m.append(p);return}visible.forEach(x=>{const card=document.createElement('article');card.className='item';const bowl=document.createElement('div');bowl.className='bowl';bowl.textContent=emojis[x.category]||'🍽️';const info=document.createElement('div');info.className='info';const h=document.createElement('h3');h.textContent=x.name;const p=document.createElement('p');p.textContent=x.category;info.append(h,p);const price=document.createElement('div');price.className='price';price.textContent=money(x.price);card.append(bowl,info,price);m.append(card)})}
-function reset(){$('itemForm').reset();$('editId').value='';$('category').value=activeCategory;$('saveBtn').textContent='Menüye ekle';$('adminError').textContent=''}
-function renderList(){const list=$('list');list.replaceChildren();if(!items.length){const p=document.createElement('p');p.className='muted';p.textContent='Henüz ürün yok.';list.append(p);return}items.forEach(x=>{const row=document.createElement('div');row.className='row';const n=document.createElement('div');n.className='rowname';const b=document.createElement('strong');b.textContent=x.name;const s=document.createElement('small');s.textContent=x.category+' · '+money(x.price);n.append(b,s);const edit=document.createElement('button');edit.className='secondary';edit.textContent='Düzenle';edit.onclick=()=>{$('editId').value=x.id;$('name').value=x.name;$('category').value=x.category;$('price').value=x.price;$('saveBtn').textContent='Değişiklikleri kaydet';$('adminError').textContent='';$('name').focus()};const del=document.createElement('button');del.className='danger';del.textContent='Sil';del.onclick=async()=>{if(!confirm(x.name+' menüden silinsin mi?'))return;del.disabled=true;try{await api(API+'?id='+encodeURIComponent(x.id),{method:'DELETE'});await loadMenu();reset()}catch(e){$('adminError').textContent='Silinemedi: '+e.message;del.disabled=false}};row.append(n,edit,del);list.append(row)})}
-function show(id){$(id).classList.add('show')}function hide(id){$(id).classList.remove('show')}
-$('openLogin').onclick=()=>{$('password').value='';$('error').textContent='';show('login');$('password').focus()};
-$('loginForm').onsubmit=async e=>{e.preventDefault();const btn=$('loginBtn');btn.disabled=true;$('error').textContent='';const candidate=$('password').value;try{const r=await fetch(API+'?action=login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:candidate}),cache:'no-store'});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Giriş yapılamadı.');adminPassword=candidate;hide('login');reset();renderList();show('admin')}catch(err){$('error').textContent=err.message||'Giriş başarısız.'}finally{btn.disabled=false}};
-$('itemForm').onsubmit=async e=>{e.preventDefault();const btn=$('saveBtn');btn.disabled=true;$('adminError').textContent='';const name=$('name').value.trim(),category=$('category').value,price=Number($('price').value),id=$('editId').value;if(!name||!categories.includes(category)||!Number.isFinite(price)||price<0){$('adminError').textContent='Ürün adı, kategori ve geçerli fiyat gir.';btn.disabled=false;return}try{const body=JSON.stringify({name,category,price});if(id)await api(API+'?id='+encodeURIComponent(id),{method:'PUT',body});else await api(API,{method:'POST',body});activeCategory=category;await loadMenu();reset()}catch(err){$('adminError').textContent='Kaydedilemedi: '+err.message}finally{btn.disabled=false}};
-$('clearBtn').onclick=reset;$('logout').onclick=()=>{adminPassword='';hide('admin');reset()};document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>hide(b.dataset.close));document.querySelectorAll('.backdrop').forEach(b=>b.onclick=e=>{if(e.target===b)hide(b.id)});document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.backdrop.show').forEach(x=>hide(x.id))});loadMenu();
+'use strict';
+(() => {
+  const API_URLS = ['/api/menu', '/.netlify/functions/menu'];
+  // İşletme WhatsApp numarası: ülke kodu dahil, + işareti olmadan.
+  const WHATSAPP_NUMBER = '905518871243';
+  const CATEGORIES = ['Çorbalar','Pideler','Izgaralar','İçecekler','Tatlılar'];
+  const ICONS = {'Çorbalar':'🍲','Pideler':'🫓','Izgaralar':'🍢','İçecekler':'🥤','Tatlılar':'🍮'};
+  const $ = id => document.getElementById(id);
+  let products = [], selectedCategory = 'Çorbalar', adminPassword = '', activeApi = API_URLS[0];
+  const cart = new Map();
+  function formatPrice(price) { return new Intl.NumberFormat('tr-TR',{maximumFractionDigits:2}).format(Number(price)||0)+' TL'; }
+  async function sendRequest(url, options={}) {
+    const headers = {'Content-Type':'application/json',...(options.headers||{})};
+    if (adminPassword) headers['x-admin-password'] = adminPassword;
+    let response;
+    try { response = await fetch(url,{...options,headers,cache:'no-store'}); }
+    catch { throw new Error('İnternet veya sunucu bağlantısı kurulamadı.'); }
+    const text = await response.text(); let data = null;
+    try { data = text ? JSON.parse(text) : null; } catch { data = null; }
+    if (!response.ok) { const error = new Error(data && data.error ? data.error : 'Sunucu HTTP '+response.status+' hatası döndürdü.'); error.status=response.status; throw error; }
+    if (text && data === null) throw new Error('Sunucu JSON yerine HTML veya farklı bir yanıt döndürdü.');
+    return data;
+  }
+  async function api(path='', options={}) {
+    const urls = [activeApi,...API_URLS.filter(url=>url!==activeApi)]; let lastError;
+    for (const base of urls) {
+      try { const result=await sendRequest(base+path,options); activeApi=base; return result; }
+      catch(error) { lastError=error; if(error.status===404||error.status===405) continue; throw error; }
+    }
+    throw lastError || new Error('Menü API adresi bulunamadı.');
+  }
+  function renderCategories() {
+    const nav=$('categories'); nav.replaceChildren();
+    CATEGORIES.forEach(category=>{ const button=document.createElement('button'); button.type='button'; button.className='category'+(category===selectedCategory?' active':''); button.textContent=category; button.setAttribute('aria-pressed',String(category===selectedCategory)); button.addEventListener('click',()=>{selectedCategory=category;renderMenu();}); nav.appendChild(button); });
+    $('sectionTitle').textContent=selectedCategory;
+  }
+  function changeQuantity(productId,delta) { const key=String(productId),next=Math.max(0,(cart.get(key)||0)+delta); if(next===0)cart.delete(key);else cart.set(key,next);renderMenu();renderCart(); }
+  function renderMenu() {
+    renderCategories(); const menu=$('menu'); menu.replaceChildren();
+    const filtered=products.filter(product=>product.category===selectedCategory);
+    if(!filtered.length){const p=document.createElement('p');p.className='status';p.textContent='Bu kategoride henüz ürün bulunmuyor.';menu.appendChild(p);return;}
+    filtered.forEach(product=>{
+      const card=document.createElement('article');card.className='item';const icon=document.createElement('div');icon.className='food-icon';icon.textContent=ICONS[product.category]||'🍽️';
+      const details=document.createElement('div');details.className='details';const name=document.createElement('h3');name.textContent=product.name;const category=document.createElement('p');category.textContent=product.category;details.append(name,category);
+      const controls=document.createElement('div');controls.className='qty-controls';const label=document.createElement('span');label.textContent='Adet:';label.style.fontSize='12px';
+      const minus=document.createElement('button');minus.type='button';minus.className='qty-btn';minus.textContent='−';minus.setAttribute('aria-label',product.name+' adet azalt');minus.addEventListener('click',()=>changeQuantity(product.id,-1));
+      const count=document.createElement('span');count.className='qty-number';count.textContent=cart.get(String(product.id))||0;
+      const plus=document.createElement('button');plus.type='button';plus.className='qty-btn';plus.textContent='+';plus.setAttribute('aria-label',product.name+' adet artır');plus.addEventListener('click',()=>changeQuantity(product.id,1));controls.append(label,minus,count,plus);details.appendChild(controls);
+      const price=document.createElement('div');price.className='price';price.textContent=formatPrice(product.price);card.append(icon,details,price);menu.appendChild(card);
+    });
+  }
+  function selectedProducts(){return products.filter(p=>(cart.get(String(p.id))||0)>0).map(p=>({...p,quantity:cart.get(String(p.id)),subtotal:p.price*cart.get(String(p.id))}));}
+  function renderCart(){
+    const container=$('cartItems');container.replaceChildren();const selected=selectedProducts();let total=0,totalQuantity=0;
+    if(!selected.length)container.textContent='Henüz ürün seçmedin.';
+    else selected.forEach(item=>{total+=item.subtotal;totalQuantity+=item.quantity;const row=document.createElement('div');row.className='cart-row';const label=document.createElement('span');label.textContent=item.quantity+' × '+item.name;const amount=document.createElement('strong');amount.textContent=formatPrice(item.subtotal);row.append(label,amount);container.appendChild(row);});
+    $('cartTotal').textContent=formatPrice(total);$('whatsappOrder').textContent=totalQuantity>0?'WhatsApp ile Sipariş Ver ('+totalQuantity+' ürün)':'WhatsApp ile Sipariş Ver';
+  }
+  function show(id){$(id).classList.add('show');} function hide(id){$(id).classList.remove('show');}
+  async function loadMenu(){
+    $('menu').innerHTML='<p class="status">Menü yükleniyor…</p>';
+    try{
+      const data=await api();if(!Array.isArray(data))throw new Error('API ürün listesi döndürmedi.');
+      products=data.map(product=>({id:product.id,name:String(product.name||''),category:CATEGORIES.includes(product.category)?product.category:'Çorbalar',price:Number(product.price)||0}));
+      const validIds=new Set(products.map(p=>String(p.id)));for(const id of cart.keys())if(!validIds.has(id))cart.delete(id);
+      renderMenu();renderCart();renderProductList();
+    }catch(error){$('menu').replaceChildren();const message=document.createElement('p');message.className='status error';message.textContent='Menü yüklenemedi: '+error.message;const retry=document.createElement('button');retry.type='button';retry.className='btn secondary';retry.textContent='Tekrar dene';retry.addEventListener('click',loadMenu);$('menu').append(message,retry);console.error('Menü yükleme hatası:',error);}
+  }
+  $('whatsappOrder').addEventListener('click',()=>{
+    const selected=selectedProducts();if(!selected.length){alert('Lütfen önce menüden ürün ve adet seç.');return;}
+    const total=selected.reduce((sum,item)=>sum+item.subtotal,0),totalQuantity=selected.reduce((sum,item)=>sum+item.quantity,0);
+    const lines=['🍲 TARİHİ RUMELİ ÇORBACISI - YENİ SİPARİŞ',''];
+    selected.forEach(item=>{lines.push('• '+item.name,'  Adet: '+item.quantity,'  Birim fiyat: '+formatPrice(item.price),'  Ara toplam: '+formatPrice(item.subtotal),'');});
+    lines.push('Toplam ürün adedi: '+totalQuantity,'💰 SİPARİŞ TOPLAMI: '+formatPrice(total));
+    const table=$('tableNumber').value.trim(),note=$('orderNote').value.trim();if(table)lines.push('','🪑 Masa: '+table);if(note)lines.push('','📝 Sipariş notu: '+note);lines.push('','Sipariş menü sitesi üzerinden oluşturuldu.');
+    const url='https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(lines.join('\n'));
+    const opened=window.open(url,'_blank');if(!opened)window.location.href=url;
+  });
+  function resetForm(){$('productForm').reset();$('productId').value='';$('productCategory').value=selectedCategory;$('saveButton').textContent='Ürün ekle';$('saveError').textContent='';}
+  function renderProductList(){
+    const list=$('productList');list.replaceChildren();if(!products.length){list.textContent='Ürün bulunamadı.';return;}
+    products.forEach(product=>{
+      const row=document.createElement('div');row.className='product-row';const name=document.createElement('div');name.className='product-name';const strong=document.createElement('strong');strong.textContent=product.name;const small=document.createElement('small');small.textContent=product.category+' · '+formatPrice(product.price);name.append(strong,small);
+      const edit=document.createElement('button');edit.className='secondary';edit.type='button';edit.textContent='Düzenle';edit.addEventListener('click',()=>{$('productId').value=product.id;$('productName').value=product.name;$('productCategory').value=product.category;$('productPrice').value=product.price;$('saveButton').textContent='Değişiklikleri kaydet';$('saveError').textContent='';$('productName').focus();});
+      const del=document.createElement('button');del.className='danger';del.type='button';del.textContent='Sil';del.addEventListener('click',async()=>{if(!confirm(product.name+' silinsin mi?'))return;del.disabled=true;try{await api('?id='+encodeURIComponent(product.id),{method:'DELETE'});await loadMenu();resetForm();}catch(error){$('saveError').textContent='Silinemedi: '+error.message;del.disabled=false;}});row.append(name,edit,del);list.appendChild(row);
+    });
+  }
+  $('openLogin').addEventListener('click',()=>{$('password').value='';$('loginError').textContent='';show('loginOverlay');$('password').focus();});
+  $('loginForm').addEventListener('submit',async event=>{
+    event.preventDefault();const button=$('loginButton');button.disabled=true;$('loginError').textContent='';const candidate=$('password').value;
+    try{
+      const result=await api('?action=login',{method:'POST',body:JSON.stringify({password:candidate})});
+      if(result&&(result.success===false||result.ok===false||result.valid===false))throw new Error(result.error||'Yönetici şifresi hatalı.');
+      adminPassword=candidate;hide('loginOverlay');show('adminOverlay');resetForm();await loadMenu();
+    }catch(error){adminPassword='';$('loginError').textContent='Giriş yapılamadı: '+error.message;}
+    finally{button.disabled=false;}
+  });
+  $('productForm').addEventListener('submit',async event=>{
+    event.preventDefault();const id=$('productId').value,name=$('productName').value.trim(),category=$('productCategory').value,price=Number($('productPrice').value),button=$('saveButton');
+    if(!name||!CATEGORIES.includes(category)||!Number.isFinite(price)||price<0){$('saveError').textContent='Lütfen ürün bilgilerini kontrol et.';return;}
+    button.disabled=true;$('saveError').textContent='';
+    try{await api(id?'?id='+encodeURIComponent(id):'',{method:id?'PUT':'POST',body:JSON.stringify({name,category,price})});resetForm();await loadMenu();$('saveError').textContent='Ürün başarıyla kaydedildi.';}
+    catch(error){$('saveError').textContent='Kaydetme başarısız: '+error.message;}
+    finally{button.disabled=false;}
+  });
+  $('clearForm').addEventListener('click',resetForm);
+  $('logoutButton').addEventListener('click',()=>{adminPassword='';hide('adminOverlay');resetForm();});
+  document.querySelectorAll('[data-close]').forEach(button=>button.addEventListener('click',()=>hide(button.dataset.close)));
+  ['loginOverlay','adminOverlay'].forEach(id=>$(id).addEventListener('click',event=>{if(event.target===$(id))hide(id);}));
+  loadMenu();renderCart();
 })();
-</script></body></html>
+</script>
+</body>
+</html>
