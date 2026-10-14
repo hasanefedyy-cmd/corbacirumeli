@@ -1,26 +1,1340 @@
 <!doctype html>
-<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#183b2b"><title>Çorbacı Menü</title>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#183b2b">
+<title>Çorbacı Menü</title>
+
 <style>
-:root{--g:#183b2b;--cream:#fff9ed;--ink:#20251f;--muted:#687067;--line:#e9e0d0}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}header{background:var(--g);color:#fff;text-align:center;padding:30px 16px;border-bottom:5px solid #d7a84a}header small{color:#f1d9a1;font-weight:800;letter-spacing:.18em;text-transform:uppercase}h1{font-size:clamp(2rem,8vw,3.1rem);margin:8px 0 5px}header p{margin:0;color:#e5eee7}main{max-width:720px;margin:auto;padding:22px 15px 40px}.heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.heading h2{margin:0;font-size:1.25rem}.pill{background:#f3e7cd;color:#6b4a12;border-radius:99px;padding:6px 10px;font-size:.75rem;font-weight:800}.categories{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 12px;margin-bottom:4px}.category{flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--g);padding:10px 14px;border-radius:999px;font:inherit;font-size:.9rem;font-weight:800;cursor:pointer}.category.active{background:var(--g);border-color:var(--g);color:#fff}.menu{display:grid;gap:13px}.item{display:flex;align-items:center;gap:14px;background:white;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 4px 14px #392a0a08}.bowl{width:64px;height:64px;flex:0 0 64px;display:grid;place-items:center;background:#f7ead1;border-radius:16px;font-size:2rem}.info{flex:1;min-width:0}.item h3{margin:0 0 5px;font-size:1.04rem}.item p{margin:0;color:var(--muted);font-size:.88rem}.price{font-size:1.1rem;font-weight:900;color:var(--g);white-space:nowrap}footer{text-align:center;color:var(--muted);font-size:.82rem;padding:20px 8px 5px}.admin-link{display:block;margin:18px auto 0;border:0;background:transparent;color:#858a82;text-decoration:underline;text-underline-offset:4px;font-size:.82rem;padding:8px;cursor:pointer}.backdrop{display:none;position:fixed;inset:0;background:#0c1b12b8;align-items:center;justify-content:center;padding:14px;z-index:3}.backdrop.show{display:flex}.modal{width:min(460px,100%);max-height:90vh;overflow:auto;background:#fffdf8;border-radius:20px;padding:22px;box-shadow:0 20px 60px #0004}.modal h2{margin:0 0 7px;color:var(--g)}.muted{color:var(--muted);font-size:.9rem}.field{display:grid;gap:6px;margin:13px 0}.field label{font-weight:750;font-size:.9rem}.field input,.field select{width:100%;padding:12px;border:1px solid #d9d6cc;border-radius:10px;font:inherit}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.btn{border:0;border-radius:11px;padding:11px 15px;font:inherit;font-weight:800;cursor:pointer}.btn:disabled{opacity:.6;cursor:wait}.primary{background:var(--g);color:white}.secondary{background:#eee9dd;color:var(--ink)}.danger{background:#fae5df;color:#8b2e20}.notice{font-size:.82rem;background:#eaf4e9;color:#234d2d;padding:10px 12px;border-radius:10px;margin:12px 0}.list{display:grid;gap:9px;margin-top:12px}.row{display:flex;align-items:center;gap:7px;border:1px solid var(--line);padding:10px;border-radius:12px}.rowname{flex:1;min-width:0}.row small{display:block;color:var(--muted)}.row button{padding:8px 9px;border:0;border-radius:8px;cursor:pointer;font-weight:700}.error{color:#a42d20;font-size:.9rem;margin-top:8px;white-space:pre-wrap}.status{font-size:.9rem;color:var(--muted);padding:12px 2px}@media(min-width:600px){main{padding-top:28px}.item{padding:18px}}
-</style></head><body>
-<header> <h1>TARİHİ RUMELİ ÇORBACISI</h1><p>İçinizi ısıtan lezzetler</p></header>
-<main><div class="heading"><h2 id="sectionTitle">Çorbalar</h2><span class="pill">AFİYET OLSUN</span></div><nav class="categories" id="categories" aria-label="Menü kategorileri"></nav><section id="menu" class="menu" aria-live="polite"><p class="status">Menü yükleniyor…</p></section><footer>Fiyatlar Türk lirasıdır (TL).</footer><button class="admin-link" id="openLogin">Yönetici girişi</button></main>
-<div class="backdrop" id="login"><div class="modal"><h2>Yönetici Girişi</h2><p class="muted">Menüyü düzenlemek için yönetici şifreni gir.</p><form id="loginForm"><div class="field"><label for="password">Şifre</label><input id="password" type="password" autocomplete="current-password" required></div><div id="error" class="error" role="alert"></div><div class="actions"><button class="btn primary" id="loginBtn">Giriş yap</button><button class="btn secondary" type="button" data-close="login">Vazgeç</button></div></form></div></div>
-<div class="backdrop" id="admin"><div class="modal"><h2>Menüyü Düzenle</h2><p class="muted">Ürün ekle, kategori seç, fiyat değiştir veya sil.</p><div class="notice">Kaydedilen değişiklikler ortak veritabanına kaydedilir ve diğer cihazlarda görünür.</div><form id="itemForm"><input id="editId" type="hidden"><div class="field"><label for="name">Ürün adı</label><input id="name" maxlength="80" required placeholder="Örn. Tavuk suyu"></div><div class="field"><label for="category">Kategori</label><select id="category" required><option>Çorbalar</option><option>Pideler</option><option>Izgaralar</option><option>İçecekler</option><option>Tatlılar</option></select></div><div class="field"><label for="price">Fiyat (TL)</label><input id="price" type="number" min="0" max="100000" step="0.01" required placeholder="150"></div><div id="adminError" class="error" role="alert"></div><div class="actions"><button class="btn primary" id="saveBtn">Menüye ekle</button><button class="btn secondary" type="button" id="clearBtn">Temizle</button></div></form><h3>Mevcut ürünler</h3><div id="list" class="list"></div><div class="actions"><button class="btn secondary" id="logout">Çıkış yap</button><button class="btn secondary" type="button" data-close="admin">Kapat</button></div></div></div>
+:root{
+  --g:#183b2b;
+  --cream:#fff9ed;
+  --ink:#20251f;
+  --muted:#687067;
+  --line:#e9e0d0;
+  --gold:#d7a84a;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:var(--cream);
+  color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+
+header{
+  background:var(--g);
+  color:#fff;
+  text-align:center;
+  padding:30px 16px;
+  border-bottom:5px solid var(--gold);
+}
+
+h1{
+  font-size:clamp(2rem,8vw,3.1rem);
+  margin:8px 0 5px;
+}
+
+header p{
+  margin:0;
+  color:#e5eee7;
+}
+
+main{
+  max-width:720px;
+  margin:auto;
+  padding:22px 15px 40px;
+}
+
+.heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:14px;
+}
+
+.heading h2{
+  margin:0;
+  font-size:1.25rem;
+}
+
+.pill{
+  background:#f3e7cd;
+  color:#6b4a12;
+  border-radius:99px;
+  padding:6px 10px;
+  font-size:.75rem;
+  font-weight:800;
+}
+
+.categories{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:2px 1px 12px;
+  margin-bottom:4px;
+  scrollbar-width:none;
+}
+
+.categories::-webkit-scrollbar{
+  display:none;
+}
+
+.category{
+  flex:0 0 auto;
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--g);
+  padding:10px 14px;
+  border-radius:999px;
+  font:inherit;
+  font-size:.9rem;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.category.active{
+  background:var(--g);
+  border-color:var(--g);
+  color:#fff;
+}
+
+.menu{
+  display:grid;
+  gap:14px;
+}
+
+/* ÜRÜN KARTI */
+.item{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  background:white;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:12px;
+  box-shadow:0 4px 14px #392a0a08;
+  overflow:hidden;
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+
+.item:active{
+  transform:scale(.985);
+}
+
+.food-image{
+  width:82px;
+  height:82px;
+  flex:0 0 82px;
+  border-radius:15px;
+  object-fit:cover;
+  background:#f7ead1;
+  display:block;
+}
+
+.info{
+  flex:1;
+  min-width:0;
+}
+
+.item h3{
+  margin:0 0 5px;
+  font-size:1.04rem;
+  line-height:1.25;
+}
+
+.item p{
+  margin:0;
+  color:var(--muted);
+  font-size:.88rem;
+}
+
+.price{
+  font-size:1.1rem;
+  font-weight:900;
+  color:var(--g);
+  white-space:nowrap;
+}
+
+footer{
+  text-align:center;
+  color:var(--muted);
+  font-size:.82rem;
+  padding:20px 8px 5px;
+}
+
+.admin-link{
+  display:block;
+  margin:18px auto 0;
+  border:0;
+  background:transparent;
+  color:#858a82;
+  text-decoration:underline;
+  text-underline-offset:4px;
+  font-size:.82rem;
+  padding:8px;
+  cursor:pointer;
+}
+
+/* MODAL */
+.backdrop{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#0c1b12b8;
+  align-items:center;
+  justify-content:center;
+  padding:14px;
+  z-index:3;
+}
+
+.backdrop.show{
+  display:flex;
+}
+
+.modal{
+  width:min(460px,100%);
+  max-height:90vh;
+  overflow:auto;
+  background:#fffdf8;
+  border-radius:20px;
+  padding:22px;
+  box-shadow:0 20px 60px #0004;
+}
+
+.modal h2{
+  margin:0 0 7px;
+  color:var(--g);
+}
+
+.muted{
+  color:var(--muted);
+  font-size:.9rem;
+}
+
+.field{
+  display:grid;
+  gap:6px;
+  margin:13px 0;
+}
+
+.field label{
+  font-weight:750;
+  font-size:.9rem;
+}
+
+.field input,
+.field select{
+  width:100%;
+  padding:12px;
+  border:1px solid #d9d6cc;
+  border-radius:10px;
+  font:inherit;
+}
+
+.actions{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  margin-top:15px;
+}
+
+.btn{
+  border:0;
+  border-radius:11px;
+  padding:11px 15px;
+  font:inherit;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.btn:disabled{
+  opacity:.6;
+  cursor:wait;
+}
+
+.primary{
+  background:var(--g);
+  color:white;
+}
+
+.secondary{
+  background:#eee9dd;
+  color:var(--ink);
+}
+
+.danger{
+  background:#fae5df;
+  color:#8b2e20;
+}
+
+.notice{
+  font-size:.82rem;
+  background:#eaf4e9;
+  color:#234d2d;
+  padding:10px 12px;
+  border-radius:10px;
+  margin:12px 0;
+}
+
+.list{
+  display:grid;
+  gap:9px;
+  margin-top:12px;
+}
+
+.row{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  border:1px solid var(--line);
+  padding:10px;
+  border-radius:12px;
+}
+
+.rowname{
+  flex:1;
+  min-width:0;
+}
+
+.row small{
+  display:block;
+  color:var(--muted);
+}
+
+.row button{
+  padding:8px 9px;
+  border:0;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.error{
+  color:#a42d20;
+  font-size:.9rem;
+  margin-top:8px;
+  white-space:pre-wrap;
+}
+
+.status{
+  font-size:.9rem;
+  color:var(--muted);
+  padding:12px 2px;
+}
+
+/* MOBİL */
+@media(max-width:480px){
+
+  .item{
+    gap:11px;
+    padding:10px;
+  }
+
+  .food-image{
+    width:72px;
+    height:72px;
+    flex-basis:72px;
+    border-radius:13px;
+  }
+
+  .item h3{
+    font-size:1rem;
+  }
+
+  .item p{
+    font-size:.8rem;
+  }
+
+  .price{
+    font-size:1rem;
+  }
+}
+
+@media(min-width:600px){
+
+  main{
+    padding-top:28px;
+  }
+
+  .item{
+    padding:14px;
+  }
+
+  .food-image{
+    width:90px;
+    height:90px;
+    flex-basis:90px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>TARİHİ RUMELİ ÇORBACISI</h1>
+  <p>İçinizi ısıtan lezzetler</p>
+</header>
+
+<main>
+
+  <div class="heading">
+    <h2 id="sectionTitle">Çorbalar</h2>
+    <span class="pill">AFİYET OLSUN</span>
+  </div>
+
+  <nav
+    class="categories"
+    id="categories"
+    aria-label="Menü kategorileri">
+  </nav>
+
+  <section
+    id="menu"
+    class="menu"
+    aria-live="polite">
+
+    <p class="status">Menü yükleniyor…</p>
+
+  </section>
+
+  <footer>
+    Fiyatlar Türk lirasıdır (TL).
+  </footer>
+
+  <button
+    class="admin-link"
+    id="openLogin">
+    Yönetici girişi
+  </button>
+
+</main>
+
+
+<!-- YÖNETİCİ GİRİŞİ -->
+
+<div class="backdrop" id="login">
+
+  <div class="modal">
+
+    <h2>Yönetici Girişi</h2>
+
+    <p class="muted">
+      Menüyü düzenlemek için yönetici şifreni gir.
+    </p>
+
+    <form id="loginForm">
+
+      <div class="field">
+
+        <label for="password">
+          Şifre
+        </label>
+
+        <input
+          id="password"
+          type="password"
+          autocomplete="current-password"
+          required>
+
+      </div>
+
+      <div
+        id="error"
+        class="error"
+        role="alert">
+      </div>
+
+      <div class="actions">
+
+        <button
+          class="btn primary"
+          id="loginBtn">
+          Giriş yap
+        </button>
+
+        <button
+          class="btn secondary"
+          type="button"
+          data-close="login">
+          Vazgeç
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- ADMIN PANELİ -->
+
+<div class="backdrop" id="admin">
+
+  <div class="modal">
+
+    <h2>Menüyü Düzenle</h2>
+
+    <p class="muted">
+      Ürün ekle, kategori seç, fiyat değiştir veya sil.
+    </p>
+
+    <div class="notice">
+      Kaydedilen değişiklikler ortak veritabanına kaydedilir
+      ve diğer cihazlarda görünür.
+    </div>
+
+    <form id="itemForm">
+
+      <input
+        id="editId"
+        type="hidden">
+
+      <div class="field">
+
+        <label for="name">
+          Ürün adı
+        </label>
+
+        <input
+          id="name"
+          maxlength="80"
+          required
+          placeholder="Örn. Tavuk suyu">
+
+      </div>
+
+      <div class="field">
+
+        <label for="category">
+          Kategori
+        </label>
+
+        <select
+          id="category"
+          required>
+
+          <option>Çorbalar</option>
+          <option>Pideler</option>
+          <option>Izgaralar</option>
+          <option>İçecekler</option>
+          <option>Tatlılar</option>
+
+        </select>
+
+      </div>
+
+      <div class="field">
+
+        <label for="price">
+          Fiyat (TL)
+        </label>
+
+        <input
+          id="price"
+          type="number"
+          min="0"
+          max="100000"
+          step="0.01"
+          required
+          placeholder="150">
+
+      </div>
+
+      <div
+        id="adminError"
+        class="error"
+        role="alert">
+      </div>
+
+      <div class="actions">
+
+        <button
+          class="btn primary"
+          id="saveBtn">
+          Menüye ekle
+        </button>
+
+        <button
+          class="btn secondary"
+          type="button"
+          id="clearBtn">
+          Temizle
+        </button>
+
+      </div>
+
+    </form>
+
+    <h3>Mevcut ürünler</h3>
+
+    <div
+      id="list"
+      class="list">
+    </div>
+
+    <div class="actions">
+
+      <button
+        class="btn secondary"
+        id="logout">
+        Çıkış yap
+      </button>
+
+      <button
+        class="btn secondary"
+        type="button"
+        data-close="admin">
+        Kapat
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
 <script>
-(()=>{'use strict';
-const API='/api/menu',categories=['Çorbalar','Pideler','Izgaralar','İçecekler','Tatlılar'],emojis={'Çorbalar':'🍲','Pideler':'🫓','Izgaralar':'🍢','İçecekler':'🥤','Tatlılar':'🍮'},$=id=>document.getElementById(id);let items=[],activeCategory='Çorbalar',adminPassword='';
-function money(n){return new Intl.NumberFormat('tr-TR',{maximumFractionDigits:2}).format(Number(n)||0)+' TL'}
-async function api(url,options={}){const headers={'Content-Type':'application/json',...(options.headers||{})};if(adminPassword)headers['x-admin-password']=adminPassword;let r;try{r=await fetch(url,{...options,headers,cache:'no-store'})}catch{throw new Error('Sunucuya bağlanılamadı. İnternet bağlantısını kontrol edin.')}const t=await r.text();let d=null;try{d=t?JSON.parse(t):null}catch{}if(!r.ok)throw new Error(d?.error||(r.status===404?'API adresi bulunamadı. Netlify yönlendirmesini kontrol edin.':'İstek başarısız ('+r.status+').'));if(d===null&&t)throw new Error('Sunucudan beklenmeyen yanıt geldi. Netlify yönlendirmesini kontrol edin.');return d}
-async function loadMenu(){ $('menu').innerHTML='<p class="status">Menü yükleniyor…</p>';try{const d=await api(API);if(!Array.isArray(d))throw new Error('Menü verisi okunamadı.');items=d.map(x=>({...x,id:x.id,name:String(x.name),category:categories.includes(x.category)?x.category:'Çorbalar',price:Number(x.price)}));render();renderList()}catch(e){$('menu').replaceChildren();const p=document.createElement('p');p.className='error';p.textContent='Menü yüklenemedi: '+e.message;$('menu').append(p)}}
-function renderCategories(){const nav=$('categories');nav.replaceChildren();categories.forEach(c=>{const b=document.createElement('button');b.type='button';b.className='category'+(c===activeCategory?' active':'');b.textContent=c;b.setAttribute('aria-pressed',String(c===activeCategory));b.onclick=()=>{activeCategory=c;render()};nav.append(b)});$('sectionTitle').textContent=activeCategory}
-function render(){renderCategories();const m=$('menu');m.replaceChildren();const visible=items.filter(x=>x.category===activeCategory);if(!visible.length){const p=document.createElement('p');p.className='muted';p.textContent='Bu kategoride henüz ürün yok.';m.append(p);return}visible.forEach(x=>{const card=document.createElement('article');card.className='item';const bowl=document.createElement('div');bowl.className='bowl';bowl.textContent=emojis[x.category]||'🍽️';const info=document.createElement('div');info.className='info';const h=document.createElement('h3');h.textContent=x.name;const p=document.createElement('p');p.textContent=x.category;info.append(h,p);const price=document.createElement('div');price.className='price';price.textContent=money(x.price);card.append(bowl,info,price);m.append(card)})}
-function reset(){$('itemForm').reset();$('editId').value='';$('category').value=activeCategory;$('saveBtn').textContent='Menüye ekle';$('adminError').textContent=''}
-function renderList(){const list=$('list');list.replaceChildren();if(!items.length){const p=document.createElement('p');p.className='muted';p.textContent='Henüz ürün yok.';list.append(p);return}items.forEach(x=>{const row=document.createElement('div');row.className='row';const n=document.createElement('div');n.className='rowname';const b=document.createElement('strong');b.textContent=x.name;const s=document.createElement('small');s.textContent=x.category+' · '+money(x.price);n.append(b,s);const edit=document.createElement('button');edit.className='secondary';edit.textContent='Düzenle';edit.onclick=()=>{$('editId').value=x.id;$('name').value=x.name;$('category').value=x.category;$('price').value=x.price;$('saveBtn').textContent='Değişiklikleri kaydet';$('adminError').textContent='';$('name').focus()};const del=document.createElement('button');del.className='danger';del.textContent='Sil';del.onclick=async()=>{if(!confirm(x.name+' menüden silinsin mi?'))return;del.disabled=true;try{await api(API+'?id='+encodeURIComponent(x.id),{method:'DELETE'});await loadMenu();reset()}catch(e){$('adminError').textContent='Silinemedi: '+e.message;del.disabled=false}};row.append(n,edit,del);list.append(row)})}
-function show(id){$(id).classList.add('show')}function hide(id){$(id).classList.remove('show')}
-$('openLogin').onclick=()=>{$('password').value='';$('error').textContent='';show('login');$('password').focus()};
-$('loginForm').onsubmit=async e=>{e.preventDefault();const btn=$('loginBtn');btn.disabled=true;$('error').textContent='';const candidate=$('password').value;try{const r=await fetch(API+'?action=login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:candidate}),cache:'no-store'});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Giriş yapılamadı.');adminPassword=candidate;hide('login');reset();renderList();show('admin')}catch(err){$('error').textContent=err.message||'Giriş başarısız.'}finally{btn.disabled=false}};
-$('itemForm').onsubmit=async e=>{e.preventDefault();const btn=$('saveBtn');btn.disabled=true;$('adminError').textContent='';const name=$('name').value.trim(),category=$('category').value,price=Number($('price').value),id=$('editId').value;if(!name||!categories.includes(category)||!Number.isFinite(price)||price<0){$('adminError').textContent='Ürün adı, kategori ve geçerli fiyat gir.';btn.disabled=false;return}try{const body=JSON.stringify({name,category,price});if(id)await api(API+'?id='+encodeURIComponent(id),{method:'PUT',body});else await api(API,{method:'POST',body});activeCategory=category;await loadMenu();reset()}catch(err){$('adminError').textContent='Kaydedilemedi: '+err.message}finally{btn.disabled=false}};
-$('clearBtn').onclick=reset;$('logout').onclick=()=>{adminPassword='';hide('admin');reset()};document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>hide(b.dataset.close));document.querySelectorAll('.backdrop').forEach(b=>b.onclick=e=>{if(e.target===b)hide(b.id)});document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.backdrop.show').forEach(x=>hide(x.id))});loadMenu();
-})();
-</script></body></html>
+
+(()=>{
+
+'use strict';
+
+
+/* API */
+
+const API='/api/menu';
+
+
+/* KATEGORİLER */
+
+const categories=[
+  'Çorbalar',
+  'Pideler',
+  'Izgaralar',
+  'İçecekler',
+  'Tatlılar'
+];
+
+
+const $=id=>document.getElementById(id);
+
+let items=[];
+let activeCategory='Çorbalar';
+let adminPassword='';
+
+
+/*
+==================================================
+YEMEK FOTOĞRAFLARI
+==================================================
+
+Ürün adında aşağıdaki kelimeler bulunursa
+uygun fotoğraf otomatik seçilir.
+
+Yeni ürün eklediğinde ayrıca hiçbir şey
+yapmana gerek kalmaz.
+*/
+
+
+const images={
+
+  /* ÇORBALAR */
+
+  'mercimek':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Mercimek_or_Turkish_lentil_soup.jpg',
+
+  'ezogelin':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Ezogelin_soup.jpg',
+
+  'kelle paça':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Kelle_pa%C3%A7a_%C3%A7orbas%C4%B1_-_head_and_leg_soup.jpg',
+
+  'kelle':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Kelle_pa%C3%A7a_%C3%A7orbas%C4%B1_-_head_and_leg_soup.jpg',
+
+  'paça':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Kelle_pa%C3%A7a_%C3%A7orbas%C4%B1_-_head_and_leg_soup.jpg',
+
+  'tavuk':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Chicken_soup.jpg',
+
+  'işkembe':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/%C4%B0%C5%9Fkembe_%C3%A7orbas%C4%B1.jpg',
+
+  'tarhana':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Tarhana_soup.jpg',
+
+  'yayla':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Yayla_%C3%A7orbas%C4%B1.jpg',
+
+
+  /* PİDELER */
+
+  'pide':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Turkish_pide.jpg',
+
+  'kıymalı':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Turkish_pide.jpg',
+
+  'kuşbaşılı':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Turkish_pide.jpg',
+
+  'kaşarlı':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Turkish_pide.jpg',
+
+
+  /* IZGARALAR */
+
+  'kebap':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Adana_kebab.jpg',
+
+  'adana':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Adana_kebab.jpg',
+
+  'urfa':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Urfa_kebab.jpg',
+
+  'köfte':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/K%C3%B6fte.jpg',
+
+  'tavuk şiş':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Chicken_shish.jpg',
+
+  'şiş':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Chicken_shish.jpg',
+
+
+  /* İÇECEKLER */
+
+  'ayran':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Ayran.jpg',
+
+  'şalgam':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/%C5%9Ealgam_suyu.jpg',
+
+  'çay':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Turkish_tea.jpg',
+
+  'kahve':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Turkish_coffee.jpg',
+
+  'su':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Glass_of_water.jpg',
+
+
+  /* TATLILAR */
+
+  'baklava':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Baklava.jpg',
+
+  'sütlaç':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/S%C3%BCtlac.jpg',
+
+  'kadayıf':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Kadayif.jpg',
+
+  'künefe':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/K%C3%BCnefe.jpg'
+
+};
+
+
+/*
+==================================================
+KATEGORİ YEDEK FOTOĞRAFLARI
+==================================================
+*/
+
+const categoryImages={
+
+  'Çorbalar':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Mercimek_or_Turkish_lentil_soup.jpg',
+
+  'Pideler':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Turkish_pide.jpg',
+
+  'Izgaralar':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Adana_kebab.jpg',
+
+  'İçecekler':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Ayran.jpg',
+
+  'Tatlılar':
+  'https://commons.wikimedia.org/wiki/Special:Redirect/file/Baklava.jpg'
+
+};
+
+
+/*
+==================================================
+ÜRÜNE FOTOĞRAF BUL
+==================================================
+*/
+
+function getImage(item){
+
+  const name=String(item.name||'').toLocaleLowerCase('tr-TR');
+
+  /*
+  Önce ürün adına göre bak.
+  */
+
+  for(const key of Object.keys(images)){
+
+    if(name.includes(key)){
+      return images[key];
+    }
+
+  }
+
+  /*
+  Bulamazsa kategori fotoğrafını kullan.
+  */
+
+  return categoryImages[item.category] ||
+         categoryImages['Çorbalar'];
+
+}
+
+
+/*
+==================================================
+PARA
+==================================================
+*/
+
+function money(n){
+
+  return new Intl.NumberFormat(
+    'tr-TR',
+    {
+      maximumFractionDigits:2
+    }
+  ).format(Number(n)||0)+' TL';
+
+}
+
+
+/*
+==================================================
+API
+==================================================
+*/
+
+async function api(url,options={}){
+
+  const headers={
+    'Content-Type':'application/json',
+    ...(options.headers||{})
+  };
+
+  if(adminPassword){
+    headers['x-admin-password']=adminPassword;
+  }
+
+  let r;
+
+  try{
+
+    r=await fetch(
+      url,
+      {
+        ...options,
+        headers,
+        cache:'no-store'
+      }
+    );
+
+  }catch{
+
+    throw new Error(
+      'Sunucuya bağlanılamadı. İnternet bağlantısını kontrol edin.'
+    );
+
+  }
+
+  const t=await r.text();
+
+  let d=null;
+
+  try{
+    d=t?JSON.parse(t):null;
+  }catch{}
+
+  if(!r.ok){
+
+    throw new Error(
+      d?.error ||
+      (
+        r.status===404
+        ?
+        'API adresi bulunamadı. Netlify yönlendirmesini kontrol edin.'
+        :
+        'İstek başarısız ('+r.status+').'
+      )
+    );
+
+  }
+
+  if(d===null && t){
+
+    throw new Error(
+      'Sunucudan beklenmeyen yanıt geldi. Netlify yönlendirmesini kontrol edin.'
+    );
+
+  }
+
+  return d;
+
+}
+
+
+/*
+==================================================
+MENÜYÜ YÜKLE
+==================================================
+*/
+
+async function loadMenu(){
+
+  $('menu').innerHTML=
+    '<p class="status">Menü yükleniyor…</p>';
+
+  try{
+
+    const d=await api(API);
+
+    if(!Array.isArray(d)){
+      throw new Error('Menü verisi okunamadı.');
+    }
+
+    items=d.map(x=>({
+
+      ...x,
+
+      id:x.id,
+
+      name:String(x.name),
+
+      category:
+        categories.includes(x.category)
+        ?
+        x.category
+        :
+        'Çorbalar',
+
+      price:Number(x.price)
+
+    }));
+
+    render();
+    renderList();
+
+  }catch(e){
+
+    $('menu').replaceChildren();
+
+    const p=document.createElement('p');
+
+    p.className='error';
+
+    p.textContent=
+      'Menü yüklenemedi: '+e.message;
+
+    $('menu').append(p);
+
+  }
+
+}
+
+
+/*
+==================================================
+KATEGORİLER
+==================================================
+*/
+
+function renderCategories(){
+
+  const nav=$('categories');
+
+  nav.replaceChildren();
+
+  categories.forEach(c=>{
+
+    const b=document.createElement('button');
+
+    b.type='button';
+
+    b.className=
+      'category'+
+      (c===activeCategory?' active':'');
+
+    b.textContent=c;
+
+    b.setAttribute(
+      'aria-pressed',
+      String(c===activeCategory)
+    );
+
+    b.onclick=()=>{
+
+      activeCategory=c;
+
+      render();
+
+    };
+
+    nav.append(b);
+
+  });
+
+  $('sectionTitle').textContent=
+    activeCategory;
+
+}
+
+
+/*
+==================================================
+MENÜYÜ ÇİZ
+==================================================
+*/
+
+function render(){
+
+  renderCategories();
+
+  const m=$('menu');
+
+  m.replaceChildren();
+
+  const visible=
+    items.filter(
+      x=>x.category===activeCategory
+    );
+
+  if(!visible.length){
+
+    const p=document.createElement('p');
+
+    p.className='muted';
+
+    p.textContent=
+      'Bu kategoride henüz ürün yok.';
+
+    m.append(p);
+
+    return;
+
+  }
+
+
+  visible.forEach(x=>{
+
+    const card=
+      document.createElement('article');
+
+    card.className='item';
+
+
+    /*
+    FOTOĞRAF
+    */
+
+    const img=
+      document.createElement('img');
+
+    img.className='food-image';
+
+    img.src=getImage(x);
+
+    img.alt=x.name;
+
+    img.loading='lazy';
+
+    /*
+    Fotoğraf açılmazsa kategori fotoğrafını dene.
+    */
+
+    img.onerror=()=>{
+
+      if(img.src!==categoryImages[x.category]){
+
+        img.src=
+          categoryImages[x.category];
+
+      }
+
+    };
+
+
+    /*
+    BİLGİ
+    */
+
+    const info=
+      document.createElement('div');
+
+    info.className='info';
+
+
+    const h=
+      document.createElement('h3');
+
+    h.textContent=x.name;
+
+
+    const p=
+      document.createElement('p');
+
+    p.textContent=x.category;
+
+
+    info.append(h,p);
+
+
+    /*
+    FİYAT
+    */
+
+    const price=
+      document.createElement('div');
+
+    price.className='price';
+
+    price.textContent=
+      money(x.price);
+
+
+    card.append(
+      img,
+      info,
+      price
+    );
+
+    m.append(card);
+
+  });
+
+}
+
+
+/*
+==================================================
+FORM SIFIRLA
+==================================================
+*/
+
+function reset(){
+
+  $('itemForm').reset();
+
+  $('editId').value='';
+
+  $('category').value=
+    activeCategory;
+
+  $('saveBtn').textContent=
+    'Menüye ekle';
+
+  $('adminError').textContent='';
+
+}
+
+
+/*
+==================================================
+ADMIN ÜRÜN LİSTESİ
+==================================================
+*/
+
+function renderList(){
+
+  const list=$('list');
+
+  list.replaceChildren();
+
+  if(!items.length){
+
+    const p=
+      document.createElement('p');
+
+    p.className='muted';
+
+    p.textContent=
+      'Henüz ürün yok.';
+
+    list.append(p);
+
+    return;
+
+  }
+
+
+  items.forEach(x=>{
+
+    const row=
+      document.createElement('div');
+
+    row.className='row';
+
+
+    const n=
+      document.createElement('div');
+
+    n.className='rowname';
+
+
+    const b=
+      document.createElement('strong');
+
+    b.textContent=x.name;
+
+
+    const s=
+      document.createElement('small');
+
+    s.textContent=
+      x.category+' · '+money(x.price);
+
+
+    n.append(b,s);
+
+
+    /*
+    DÜZENLE
+    */
+
+    const edit=
+      document.createElement('button');
+
+    edit.className='secondary';
+
+    edit.textContent='Düzenle';
+
+    edit.onclick=()=>{
+
+      $('editId').value=x.id;
+
+      $('name').value=x.name;
+
+      $('category').value=x.category;
+
+      $('price').value=x.price;
+
+      $('saveBtn').textContent=
+        'Değişiklikleri kaydet';
+
+      $('adminError').textContent='';
+
+      $('name').focus();
+
+    };
+
+
+    /*
+    SİL
+    */
+
+    const del=
+      document.createElement('button');
+
+    del.className='danger';
+
+    del.textContent='Sil';
+
+    del.onclick=async()=>{
+
+      if(
+        !confirm(
+          x.name+' menüden silinsin mi?'
+        )
+      ){
+        return;
+      }
+
+      del.disabled=true;
+
+      try{
+
+        await api(
+          API+'?id='+
+          encodeURIComponent(x.id),
+          {
+            method:'DELETE'
+          }
+        );
+
+        await loadMenu();
+
+        reset();
+
+      }catch(e){
+
+        $('adminError').textContent=
+          'Silinemedi: '+e.message;
+
+        del.disabled=false;
+
+      }
+
+    };
+
+
+    row.append(
+      n,
+      edit,
+      del
+    );
+
+    list.append(row);
+
+  });
+
+}
+
+
+/*
+==================================================
+MODAL
+==================================================
+*/
+
+function show(id){
+
+  $(id).classList.add('show');
+
+}
+
+function hide(id){
+
+  $(id).classList.remove('show');
+
+}
+
+
+/*
+==================================================
+GİRİŞ
+==================================================
+*/
+
+$('openLogin').onclick=()=>{
+
+  $('password').value='';
+
+  $('error').textContent='';
+
+  show('login'
