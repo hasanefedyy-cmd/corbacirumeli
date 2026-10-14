@@ -27,11 +27,22 @@ main{max-width:760px;margin:auto;padding:20px 14px 35px}
 .details h3{font-size:16px;margin:0 0 6px}
 .details p{font-size:12px;color:#73776f;margin:0}
 .price{color:#183b2b;font-size:17px;font-weight:bold;white-space:nowrap}
+.qty-controls{display:flex;align-items:center;gap:9px;margin-top:12px}
+.qty-btn{width:34px;height:34px;border:0;border-radius:9px;background:#183b2b;color:#fff;font-size:21px;font-weight:bold;cursor:pointer}
+.qty-number{min-width:20px;text-align:center;font-weight:bold}
 .status{padding:15px 0;line-height:1.6;overflow-wrap:anywhere}
 .error{color:#a52b1e}
 button{font-family:inherit}
 footer{text-align:center;color:#777;font-size:12px;padding:25px 5px}
 .admin-link{display:block;margin:8px auto;border:0;background:transparent;color:#777;text-decoration:underline;padding:10px;cursor:pointer}
+.cart{margin-top:25px;padding:18px;background:#183b2b;color:white;border-radius:16px;box-shadow:0 5px 22px #0002}
+.cart h2{margin:0 0 12px}
+.cart-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #ffffff30}
+.cart-row span:first-child{overflow-wrap:anywhere}
+.cart-total{display:flex;justify-content:space-between;gap:10px;font-size:20px;margin:17px 0}
+.cart-note{display:block;width:100%;min-height:75px;padding:12px;border:1px solid #d8d2c5;border-radius:9px;font:inherit;resize:vertical;margin:10px 0 14px}
+.whatsapp-btn{width:100%;padding:14px;background:#25d366;color:white;border:0;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer}
+.cart-hint{font-size:12px;color:#e0eadf;line-height:1.5;margin-bottom:0}
 .overlay{display:none;position:fixed;z-index:5;inset:0;background:#0009;align-items:center;justify-content:center;padding:12px}
 .overlay.show{display:flex}
 .modal{width:100%;max-width:520px;max-height:90vh;overflow:auto;background:#fffdf8;border-radius:18px;padding:20px}
@@ -51,6 +62,11 @@ footer{text-align:center;color:#777;font-size:12px;padding:25px 5px}
 .product-name small{display:block;color:#777;margin-top:4px}
 .product-row button{border:0;border-radius:7px;padding:8px;cursor:pointer}
 .notice{background:#e9f3e7;padding:10px;border-radius:8px;font-size:13px}
+@media(max-width:390px){
+ .item{gap:9px;padding:11px}
+ .food-icon{width:45px;height:45px;font-size:25px}
+ .price{font-size:14px}
+}
 </style>
 </head>
 
@@ -71,6 +87,32 @@ footer{text-align:center;color:#777;font-size:12px;padding:25px 5px}
 
   <section id="menu" class="menu" aria-live="polite">
     <p class="status">Menü yükleniyor…</p>
+  </section>
+
+  <section class="cart" id="orderCart">
+    <h2>🛒 Siparişin</h2>
+    <div id="cartItems">Henüz ürün seçmedin.</div>
+
+    <div class="cart-total">
+      <span>Toplam</span>
+      <strong id="cartTotal">0 TL</strong>
+    </div>
+
+    <label for="orderNote">Sipariş notu (isteğe bağlı)</label>
+    <textarea
+      class="cart-note"
+      id="orderNote"
+      placeholder="Örn. Kendi suyunda olsun, acısız olsun..."
+    ></textarea>
+
+    <button class="whatsapp-btn" id="whatsappOrder" type="button">
+      WhatsApp ile Sipariş Ver
+    </button>
+
+    <p class="cart-hint">
+      WhatsApp açıldığında sipariş mesajını göndermek için
+      Gönder düğmesine basmalısın.
+    </p>
   </section>
 
   <footer>Fiyatlar Türk lirasıdır (TL).</footer>
@@ -150,6 +192,8 @@ footer{text-align:center;color:#777;font-size:12px;padding:25px 5px}
     '/.netlify/functions/menu'
   ];
 
+  const WHATSAPP_NUMBER = '905518871243';
+
   const CATEGORIES = [
     'Çorbalar',
     'Pideler',
@@ -172,6 +216,9 @@ footer{text-align:center;color:#777;font-size:12px;padding:25px 5px}
   let selectedCategory = 'Çorbalar';
   let adminPassword = '';
   let activeApi = API_URLS[0];
+
+  // Sepette ürün kimliğine göre adet saklanır.
+  const cart = new Map();
 
   function formatPrice(price) {
     return new Intl.NumberFormat('tr-TR', {
@@ -197,7 +244,7 @@ footer{text-align:center;color:#777;font-size:12px;padding:25px 5px}
         headers,
         cache: 'no-store'
       });
-    } catch (error) {
+    } catch {
       throw new Error('İnternet veya sunucu bağlantısı kurulamadı.');
     }
 
@@ -206,7 +253,7 @@ footer{text-align:center;color:#777;font-size:12px;padding:25px 5px}
 
     try {
       data = text ? JSON.parse(text) : null;
-    } catch (error) {
+    } catch {
       data = null;
     }
 
@@ -265,6 +312,11 @@ footer{text-align:center;color:#777;font-size:12px;padding:25px 5px}
       button.className =
         'category' + (category === selectedCategory ? ' active' : '');
       button.textContent = category;
+      button.setAttribute(
+        'aria-pressed',
+        String(category === selectedCategory)
+      );
+
       button.addEventListener('click', () => {
         selectedCategory = category;
         renderMenu();
@@ -274,6 +326,22 @@ footer{text-align:center;color:#777;font-size:12px;padding:25px 5px}
     });
 
     $('sectionTitle').textContent = selectedCategory;
+  }
+
+  // Ürünün adedini değiştirir.
+  function changeQuantity(productId, delta) {
+    const key = String(productId);
+    const current = cart.get(key) || 0;
+    const next = Math.max(0, current + delta);
+
+    if (next === 0) {
+      cart.delete(key);
+    } else {
+      cart.set(key, next);
+    }
+
+    renderMenu();
+    renderCart();
   }
 
   function renderMenu() {
@@ -313,6 +381,38 @@ footer{text-align:center;color:#777;font-size:12px;padding:25px 5px}
 
       details.append(name, category);
 
+      const controls = document.createElement('div');
+      controls.className = 'qty-controls';
+
+      const label = document.createElement('span');
+      label.textContent = 'Adet:';
+      label.style.fontSize = '12px';
+
+      const minus = document.createElement('button');
+      minus.type = 'button';
+      minus.className = 'qty-btn';
+      minus.textContent = '−';
+      minus.setAttribute('aria-label', product.name + ' adet azalt');
+      minus.addEventListener('click', () => {
+        changeQuantity(product.id, -1);
+      });
+
+      const count = document.createElement('span');
+      count.className = 'qty-number';
+      count.textContent = cart.get(String(product.id)) || 0;
+
+      const plus = document.createElement('button');
+      plus.type = 'button';
+      plus.className = 'qty-btn';
+      plus.textContent = '+';
+      plus.setAttribute('aria-label', product.name + ' adet artır');
+      plus.addEventListener('click', () => {
+        changeQuantity(product.id, 1);
+      });
+
+      controls.append(label, minus, count, plus);
+      details.appendChild(controls);
+
       const price = document.createElement('div');
       price.className = 'price';
       price.textContent = formatPrice(product.price);
@@ -320,6 +420,54 @@ footer{text-align:center;color:#777;font-size:12px;padding:25px 5px}
       card.append(icon, details, price);
       menu.appendChild(card);
     });
+  }
+
+  function selectedProducts() {
+    return products
+      .filter(product => (cart.get(String(product.id)) || 0) > 0)
+      .map(product => ({
+        ...product,
+        quantity: cart.get(String(product.id)),
+        subtotal: product.price * cart.get(String(product.id))
+      }));
+  }
+
+  function renderCart() {
+    const container = $('cartItems');
+    container.replaceChildren();
+
+    const selected = selectedProducts();
+
+    let total = 0;
+    let totalQuantity = 0;
+
+    if (selected.length === 0) {
+      container.textContent = 'Henüz ürün seçmedin.';
+    } else {
+      selected.forEach(item => {
+        total += item.subtotal;
+        totalQuantity += item.quantity;
+
+        const row = document.createElement('div');
+        row.className = 'cart-row';
+
+        const label = document.createElement('span');
+        label.textContent = item.quantity + ' × ' + item.name;
+
+        const amount = document.createElement('strong');
+        amount.textContent = formatPrice(item.subtotal);
+
+        row.append(label, amount);
+        container.appendChild(row);
+      });
+    }
+
+    $('cartTotal').textContent = formatPrice(total);
+
+    const orderButton = $('whatsappOrder');
+    orderButton.textContent = totalQuantity > 0
+      ? 'WhatsApp ile Sipariş Ver (' + totalQuantity + ' ürün)'
+      : 'WhatsApp ile Sipariş Ver';
   }
 
   function show(id) {
@@ -338,9 +486,7 @@ footer{text-align:center;color:#777;font-size:12px;padding:25px 5px}
       const data = await api();
 
       if (!Array.isArray(data)) {
-        throw new Error(
-          'API ürün listesi döndürmedi. Sunucu yanıtının biçimini kontrol edin.'
-        );
+        throw new Error('API ürün listesi döndürmedi.');
       }
 
       products = data.map(product => ({
@@ -352,15 +498,21 @@ footer{text-align:center;color:#777;font-size:12px;padding:25px 5px}
         price: Number(product.price) || 0
       }));
 
+      // Silinmiş ürünlerin sepetten temizlenmesi.
+      const validIds = new Set(products.map(p => String(p.id)));
+      for (const id of cart.keys()) {
+        if (!validIds.has(id)) cart.delete(id);
+      }
+
       renderMenu();
+      renderCart();
       renderProductList();
     } catch (error) {
       $('menu').replaceChildren();
 
       const message = document.createElement('p');
       message.className = 'status error';
-      message.textContent =
-        'Menü yüklenemedi: ' + error.message;
+      message.textContent = 'Menü yüklenemedi: ' + error.message;
 
       const retry = document.createElement('button');
       retry.type = 'button';
@@ -372,6 +524,54 @@ footer{text-align:center;color:#777;font-size:12px;padding:25px 5px}
       console.error('Menü yükleme hatası:', error);
     }
   }
+
+  // WhatsApp siparişi
+  $('whatsappOrder').addEventListener('click', () => {
+    const selected = selectedProducts();
+
+    if (selected.length === 0) {
+      alert('Lütfen önce menüden ürün ve adet seç.');
+      return;
+    }
+
+    const total = selected.reduce(
+      (sum, item) => sum + item.subtotal,
+      0
+    );
+
+    const totalQuantity = selected.reduce(
+      (sum, item) => sum + item.quantity,
+      0
+    );
+
+    const lines = [
+      '🍲 TARİHİ RUMELİ ÇORBACISI - YENİ SİPARİŞ',
+      '',
+      ...selected.flatMap(item => [
+        '• ' + item.name,
+        '  Adet: ' + item.quantity,
+        '  Birim fiyat: ' + formatPrice(item.price),
+        '  Ara toplam: ' + formatPrice(item.subtotal),
+        ''
+      ]),
+      'Toplam ürün adedi: ' + totalQuantity,
+      '💰 SİPARİŞ TOPLAMI: ' + formatPrice(total)
+    ];
+
+    const note = $('orderNote').value.trim();
+
+    if (note) {
+      lines.push('', '📝 Sipariş notu: ' + note);
+    }
+
+    lines.push('', 'Sipariş menü sitesi üzerinden oluşturuldu.');
+
+    const url =
+      'https://wa.me/' + WHATSAPP_NUMBER +
+      '?text=' + encodeURIComponent(lines.join('\n'));
+
+    window.open(url, '_blank', 'noopener,noreferrer');
+  });
 
   function resetForm() {
     $('productForm').reset();
@@ -467,111 +667,4 @@ footer{text-align:center;color:#777;font-size:12px;padding:25px 5px}
 
     try {
       const result = await api('?action=login', {
-        method: 'POST',
-        body: JSON.stringify({ password: candidate })
-      });
-
-      if (!result || result.ok !== true) {
-        throw new Error(
-          result && result.error
-            ? result.error
-            : 'Giriş doğrulanamadı.'
-        );
-      }
-
-      adminPassword = candidate;
-      hide('loginOverlay');
-      resetForm();
-      renderProductList();
-      show('adminOverlay');
-    } catch (error) {
-      $('loginError').textContent =
-        'Giriş başarısız: ' + error.message;
-    } finally {
-      button.disabled = false;
-    }
-  });
-
-  $('productForm').addEventListener('submit', async event => {
-    event.preventDefault();
-
-    const button = $('saveButton');
-    button.disabled = true;
-    $('saveError').textContent = '';
-
-    const id = $('productId').value;
-    const name = $('productName').value.trim();
-    const category = $('productCategory').value;
-    const price = Number($('productPrice').value);
-
-    if (
-      !name ||
-      !CATEGORIES.includes(category) ||
-      !Number.isFinite(price) ||
-      price < 0
-    ) {
-      $('saveError').textContent =
-        'Ürün adını, kategoriyi ve geçerli fiyatı kontrol et.';
-      button.disabled = false;
-      return;
-    }
-
-    try {
-      const body = JSON.stringify({ name, category, price });
-
-      if (id) {
-        await api('?id=' + encodeURIComponent(id), {
-          method: 'PUT',
-          body
-        });
-      } else {
-        await api('', {
-          method: 'POST',
-          body
-        });
-      }
-
-      selectedCategory = category;
-      await loadMenu();
-      resetForm();
-    } catch (error) {
-      $('saveError').textContent =
-        'Kaydetme başarısız: ' + error.message;
-    } finally {
-      button.disabled = false;
-    }
-  });
-
-  $('clearForm').addEventListener('click', resetForm);
-
-  $('logoutButton').addEventListener('click', () => {
-    adminPassword = '';
-    hide('adminOverlay');
-    resetForm();
-  });
-
-  document.querySelectorAll('[data-close]').forEach(button => {
-    button.addEventListener('click', () => {
-      hide(button.dataset.close);
-    });
-  });
-
-  document.querySelectorAll('.overlay').forEach(overlay => {
-    overlay.addEventListener('click', event => {
-      if (event.target === overlay) hide(overlay.id);
-    });
-  });
-
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') {
-      document.querySelectorAll('.overlay.show').forEach(
-        overlay => hide(overlay.id)
-      );
-    }
-  });
-
-  loadMenu();
-})();
-</script>
-</body>
-</html>
+      
