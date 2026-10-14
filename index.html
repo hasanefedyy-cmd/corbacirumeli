@@ -129,32 +129,28 @@
     const totalQuantity = selected.reduce((sum, item) => sum + item.quantity, 0);
     const lines = [
       '🍲 TARİHİ RUMELİ ÇORBACISI',
-      '📋 YENİ SİPARİŞ',
-      '━━━━━━━━━━━━━━━━━━',
+      'Merhaba, sipariş vermek istiyorum.',
       ''
     ];
 
     selected.forEach((item, index) => {
       lines.push(
-        (index + 1) + '. ' + item.name,
-        '   Adet: ' + item.quantity,
-        '   Birim fiyat: ' + formatPrice(item.price),
-        '   Ürün toplamı: ' + formatPrice(item.subtotal),
+        (index + 1) + ') Sipariş: ' + item.quantity + ' adet ' + item.name,
+        'Birim fiyat: ' + formatPrice(item.price),
+        'Ürün toplamı: ' + formatPrice(item.subtotal),
         ''
       );
     });
 
     lines.push(
-      '━━━━━━━━━━━━━━━━━━',
-      '🛒 Toplam ürün adedi: ' + totalQuantity,
-      '💰 GENEL TOPLAM: ' + formatPrice(total)
+      'Toplam ürün adedi: ' + totalQuantity,
+      'GENEL TOPLAM: ' + formatPrice(total)
     );
 
     const table = $('tableNumber').value.trim();
     const note = $('orderNote').value.trim();
-    if (table) lines.push('', '🪑 Masa numarası: ' + table);
-    if (note) lines.push('', '📝 Sipariş notu: ' + note);
-    lines.push('', 'Sipariş menü sitesi üzerinden oluşturuldu.');
+    if (table) lines.push('', 'Masa numarası: ' + table);
+    if (note) lines.push('', 'Sipariş notu: ' + note);
 
     const url = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(lines.join('\n'));
     const opened = window.open(url, '_blank');
