@@ -86,7 +86,7 @@
       margin: 18px 0;
     }
 
-    input, select, button {
+    input, select, button, textarea {
       font: inherit;
     }
 
@@ -179,9 +179,7 @@
       white-space: nowrap;
     }
 
-    button {
-      cursor: pointer;
-    }
+    button { cursor: pointer; }
 
     .add-btn, .primary-btn {
       border: 0;
@@ -245,6 +243,37 @@
       margin: 18px 0;
       font-size: 20px;
       font-weight: bold;
+    }
+
+    .customer-note-label {
+      display: block;
+      margin: 20px 0 8px;
+      font-weight: bold;
+    }
+
+    .customer-note {
+      display: block;
+      width: 100%;
+      min-height: 110px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fffdf9;
+      color: var(--ink);
+      line-height: 1.5;
+      resize: vertical;
+    }
+
+    .customer-note:focus {
+      outline: 2px solid var(--gold);
+      border-color: var(--gold);
+    }
+
+    .note-help {
+      margin: 7px 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
     }
 
     .order-btn {
@@ -312,11 +341,33 @@
     <section class="cart" aria-label="Sipariş sepeti">
       <h2>Sipariş sepetim</h2>
       <div id="cartItems"></div>
+
       <div class="cart-total">
         <span>Toplam</span>
         <span id="cartTotal">0,00 TL</span>
       </div>
-      <button id="orderBtn" class="order-btn">WhatsApp ile sipariş ver</button>
+
+      <!-- MÜŞTERİ NOTU ALANI -->
+      <label class="customer-note-label" for="customerNote">
+        Sipariş notunuz
+      </label>
+
+      <textarea
+        id="customerNote"
+        class="customer-note"
+        maxlength="500"
+        placeholder="Örn. Acısız olsun, ekmek ekleyin, soğan olmasın..."
+        aria-describedby="noteHelp"
+      ></textarea>
+
+      <p id="noteHelp" class="note-help">
+        Buraya yazdığınız not WhatsApp sipariş mesajınıza eklenecektir.
+      </p>
+
+      <button id="orderBtn" class="order-btn">
+        WhatsApp ile sipariş ver
+      </button>
+
       <p class="subtitle" style="color:var(--muted)">
         Siparişinizi göndermeden önce WhatsApp ekranında kontrol edebilirsiniz.
       </p>
@@ -332,8 +383,8 @@
 
     const API_URL = "/api/menu";
 
-    // WhatsApp siparişlerini kullanmak için aşağıya restoranın
-    // ülke koduyla başlayan numarasını yazın. Örnek: 905xxxxxxxxx
+    // Restoranın WhatsApp numarası.
+    // Numara ülke koduyla yazılmalıdır; +, boşluk veya tire kullanmayın.
     const WHATSAPP_NUMBER = "905404721414";
 
     const state = {
@@ -352,7 +403,9 @@
 
       if (match) {
         const number = Number(match[1]);
-        return Number.isSafeInteger(number) && number > 0 ? number : null;
+        return Number.isSafeInteger(number) && number > 0
+          ? number
+          : null;
       }
 
       const query = new URLSearchParams(window.location.search);
@@ -360,7 +413,9 @@
 
       if (queryValue && /^\d+$/.test(queryValue)) {
         const number = Number(queryValue);
-        return Number.isSafeInteger(number) && number > 0 ? number : null;
+        return Number.isSafeInteger(number) && number > 0
+          ? number
+          : null;
       }
 
       return null;
@@ -415,7 +470,9 @@
         });
 
         if (!response.ok) {
-          throw new Error("Menü servisi HTTP " + response.status + " yanıtı verdi.");
+          throw new Error(
+            "Menü servisi HTTP " + response.status + " yanıtı verdi."
+          );
         }
 
         const data = await response.json();
@@ -451,6 +508,7 @@
         renderMenu();
       } catch (error) {
         console.error("Menü yükleme hatası:", error);
+
         showStatus(
           "Menü yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin. Hata: " +
           error.message,
@@ -487,7 +545,9 @@
     }
 
     function renderMenu() {
-      const query = $("search").value.trim().toLocaleLowerCase("tr-TR");
+      const query = $("search").value
+        .trim()
+        .toLocaleLowerCase("tr-TR");
 
       const filtered = state.products.filter((item) => {
         const categoryMatches =
@@ -513,15 +573,19 @@
           <h3>${escapeText(item.name)}</h3>
           <div class="product-bottom">
             <span class="price">${money(item.price)}</span>
-            <button type="button" class="add-btn" data-add="${escapeText(item.id)}">
-              Sepete ekle
-            </button>
+            <button
+              type="button"
+              class="add-btn"
+              data-add="${escapeText(item.id)}"
+            >Sepete ekle</button>
           </div>
         </article>
       `).join("");
 
       $("menu").querySelectorAll("[data-add]").forEach((button) => {
-        button.addEventListener("click", () => addToCart(button.dataset.add));
+        button.addEventListener("click", () =>
+          addToCart(button.dataset.add)
+        );
       });
     }
 
@@ -568,16 +632,25 @@
               <small>${money(entry.product.price * entry.quantity)}</small>
             </div>
             <div class="quantity">
-              <button type="button" aria-label="Bir azalt" data-minus="${escapeText(id)}">−</button>
+              <button
+                type="button"
+                aria-label="Bir azalt"
+                data-minus="${escapeText(id)}"
+              >−</button>
               <span>${entry.quantity}</span>
-              <button type="button" aria-label="Bir artır" data-plus="${escapeText(id)}">+</button>
+              <button
+                type="button"
+                aria-label="Bir artır"
+                data-plus="${escapeText(id)}"
+              >+</button>
             </div>
           </div>
         `).join("");
       }
 
       const total = entries.reduce(
-        (sum, [, entry]) => sum + entry.product.price * entry.quantity,
+        (sum, [, entry]) =>
+          sum + entry.product.price * entry.quantity,
         0
       );
 
@@ -605,20 +678,29 @@
       }
 
       if (!state.table) {
-        alert("Masa numarası bağlantıdan okunamadı. Lütfen masanızdaki QR kodu tekrar tarayın.");
+        alert(
+          "Masa numarası bağlantıdan okunamadı. Lütfen masanızdaki QR kodu tekrar tarayın."
+        );
         return;
       }
 
       if (!/^\d{10,15}$/.test(WHATSAPP_NUMBER)) {
-        alert("WhatsApp siparişi için index.html dosyasındaki WHATSAPP_NUMBER alanına restoran numarasını yazın.");
+        alert(
+          "WhatsApp siparişi için index.html dosyasındaki WHATSAPP_NUMBER alanını kontrol edin."
+        );
         return;
       }
 
       const total = entries.reduce(
-        (sum, entry) => sum + entry.product.price * entry.quantity,
+        (sum, entry) =>
+          sum + entry.product.price * entry.quantity,
         0
       );
 
+      // Müşterinin yazdığı notu oku.
+      const customerNote = $("customerNote").value.trim();
+
+      // Sipariş mesajını oluştur.
       const lines = [
         "Tarihi Rumeli Çorbacısı - Sipariş",
         "Masa: " + state.table,
@@ -628,10 +710,14 @@
           " = " + money(entry.product.price * entry.quantity)
         ),
         "",
-        "Toplam: " + money(total)
+        "Toplam: " + money(total),
+        "",
+        "MÜŞTERİ NOTU:",
+        customerNote || "Müşteri not yazmadı."
       ];
 
-      const url = "https://wa.me/" + WHATSAPP_NUMBER +
+      const url =
+        "https://wa.me/" + WHATSAPP_NUMBER +
         "?text=" + encodeURIComponent(lines.join("\n"));
 
       window.open(url, "_blank", "noopener,noreferrer");
