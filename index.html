@@ -2,128 +2,130 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#183b2b">
 <title>Tarihi Rumeli Çorbacısı</title>
 
 <style>
-:root{
+:root {
   --g:#183b2b;
   --cream:#fff9ed;
   --ink:#20251f;
   --muted:#687067;
   --line:#e9e0d0;
 }
-*{box-sizing:border-box}
-body{
-  margin:0;background:var(--cream);color:var(--ink);
-  font-family:system-ui,-apple-system,"Segoe UI",sans-serif
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:var(--cream);
+  color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
 }
-header{
-  background:var(--g);color:#fff;text-align:center;
-  padding:30px 16px;border-bottom:5px solid #d7a84a
+header {
+  background:var(--g);
+  color:#fff;
+  text-align:center;
+  padding:30px 16px;
+  border-bottom:5px solid #d7a84a;
 }
-h1{font-size:clamp(2rem,8vw,3.1rem);margin:8px 0 5px}
-header p{margin:0;color:#e5eee7}
-main{max-width:720px;margin:auto;padding:22px 15px 40px}
-.heading{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:10px;margin-bottom:14px
+h1 { font-size:clamp(1.7rem,7vw,3rem); margin:8px 0 5px; }
+header p { margin:0; color:#e5eee7; }
+main { max-width:720px; margin:auto; padding:22px 15px 40px; }
+.table-badge {
+  background:#eaf4e9;
+  color:#183b2b;
+  border:1px solid #c8dfc7;
+  padding:12px;
+  border-radius:12px;
+  text-align:center;
+  font-weight:900;
+  margin-bottom:18px;
 }
-.heading h2{margin:0;font-size:1.25rem}
-.pill{
-  background:#f3e7cd;color:#6b4a12;border-radius:99px;
-  padding:6px 10px;font-size:.75rem;font-weight:800
+.heading { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px; }
+.heading h2 { margin:0; font-size:1.25rem; }
+.pill { background:#f3e7cd; color:#6b4a12; border-radius:99px; padding:6px 10px; font-size:.75rem; font-weight:800; }
+.categories { display:flex; gap:8px; overflow-x:auto; padding:2px 1px 12px; margin-bottom:4px; }
+.category {
+  flex:0 0 auto; border:1px solid var(--line); background:#fff;
+  color:var(--g); padding:10px 14px; border-radius:999px;
+  font:inherit; font-size:.9rem; font-weight:800; cursor:pointer;
 }
-.categories{
-  display:flex;gap:8px;overflow-x:auto;
-  padding:2px 1px 12px;margin-bottom:4px
+.category.active { background:var(--g); border-color:var(--g); color:#fff; }
+.menu { display:grid; gap:13px; }
+.item {
+  display:flex; align-items:center; gap:12px; background:white;
+  border:1px solid var(--line); border-radius:18px; padding:14px;
+  box-shadow:0 4px 14px #392a0a08;
 }
-.category{
-  flex:0 0 auto;border:1px solid var(--line);background:#fff;
-  color:var(--g);padding:10px 14px;border-radius:999px;
-  font:inherit;font-size:.9rem;font-weight:800;cursor:pointer
+.bowl {
+  width:54px; height:54px; flex:0 0 54px; display:grid;
+  place-items:center; background:#f7ead1; border-radius:14px; font-size:1.8rem;
 }
-.category.active{background:var(--g);border-color:var(--g);color:#fff}
-.menu{display:grid;gap:13px}
-.item{
-  display:flex;align-items:center;gap:12px;background:white;
-  border:1px solid var(--line);border-radius:18px;padding:14px;
-  box-shadow:0 4px 14px #392a0a08
+.info { flex:1; min-width:0; }
+.item h3 { margin:0 0 5px; font-size:1rem; overflow-wrap:anywhere; }
+.item p { margin:0; color:var(--muted); font-size:.85rem; }
+.price { font-size:1rem; font-weight:900; color:var(--g); white-space:nowrap; }
+.order-controls { display:flex; align-items:center; gap:9px; margin-top:10px; }
+.qty-btn {
+  width:34px; height:34px; border:0; border-radius:9px;
+  background:#eee9dd; color:var(--g); font-size:1.25rem; font-weight:900; cursor:pointer;
 }
-.bowl{
-  width:54px;height:54px;flex:0 0 54px;display:grid;
-  place-items:center;background:#f7ead1;border-radius:14px;font-size:1.8rem
+.qty { min-width:20px; text-align:center; font-weight:900; }
+.order-box {
+  position:sticky; bottom:10px; margin-top:20px; background:#fff;
+  border:1px solid var(--line); border-radius:18px; padding:16px;
+  box-shadow:0 8px 30px #392a0a20; z-index:2;
 }
-.info{flex:1;min-width:0}
-.item h3{margin:0 0 5px;font-size:1rem;overflow-wrap:anywhere}
-.item p{margin:0;color:var(--muted);font-size:.85rem}
-.price{font-size:1rem;font-weight:900;color:var(--g);white-space:nowrap}
-.order-controls{display:flex;align-items:center;gap:9px;margin-top:10px}
-.qty-btn{
-  width:34px;height:34px;border:0;border-radius:9px;
-  background:#eee9dd;color:var(--g);font-size:1.25rem;
-  font-weight:900;cursor:pointer
+.order-summary { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px; }
+.total { color:var(--g); font-size:1.3rem; font-weight:950; }
+.order-btn {
+  width:100%; border:0; border-radius:12px; padding:14px;
+  background:#168447; color:white; font:inherit; font-weight:900;
+  font-size:1rem; cursor:pointer;
 }
-.qty{min-width:20px;text-align:center;font-weight:900}
-.order-box{
-  position:sticky;bottom:10px;margin-top:20px;background:#fff;
-  border:1px solid var(--line);border-radius:18px;padding:16px;
-  box-shadow:0 8px 30px #392a0a20;z-index:2
+.order-btn:disabled { opacity:.5; cursor:not-allowed; }
+.order-note { text-align:center; color:var(--muted); font-size:.76rem; margin:9px 0 0; }
+footer { text-align:center; color:var(--muted); font-size:.82rem; padding:20px 8px 5px; }
+.admin-link {
+  display:block; margin:18px auto 0; border:0; background:transparent;
+  color:#858a82; text-decoration:underline; text-underline-offset:4px;
+  font-size:.82rem; padding:8px; cursor:pointer;
 }
-.order-summary{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:10px;margin-bottom:12px
+.backdrop {
+  display:none; position:fixed; inset:0; background:#0c1b12b8;
+  align-items:center; justify-content:center; padding:14px; z-index:5;
 }
-.total{color:var(--g);font-size:1.3rem;font-weight:950}
-.order-btn{
-  width:100%;border:0;border-radius:12px;padding:14px;
-  background:#168447;color:white;font:inherit;font-weight:900;
-  font-size:1rem;cursor:pointer
+.backdrop.show { display:flex; }
+.modal {
+  width:min(460px,100%); max-height:90vh; overflow:auto;
+  background:#fffdf8; border-radius:20px; padding:22px;
+  box-shadow:0 20px 60px #0004;
 }
-.order-btn:disabled{opacity:.5;cursor:not-allowed}
-.order-note{text-align:center;color:var(--muted);font-size:.76rem;margin:9px 0 0}
-footer{text-align:center;color:var(--muted);font-size:.82rem;padding:20px 8px 5px}
-.admin-link{
-  display:block;margin:18px auto 0;border:0;background:transparent;
-  color:#858a82;text-decoration:underline;text-underline-offset:4px;
-  font-size:.82rem;padding:8px;cursor:pointer
+.modal h2 { margin:0 0 7px; color:var(--g); }
+.muted { color:var(--muted); font-size:.9rem; }
+.field { display:grid; gap:6px; margin:13px 0; }
+.field label { font-weight:750; font-size:.9rem; }
+.field input,.field select {
+  width:100%; padding:12px; border:1px solid #d9d6cc;
+  border-radius:10px; font:inherit;
 }
-.backdrop{
-  display:none;position:fixed;inset:0;background:#0c1b12b8;
-  align-items:center;justify-content:center;padding:14px;z-index:5
-}
-.backdrop.show{display:flex}
-.modal{
-  width:min(460px,100%);max-height:90vh;overflow:auto;
-  background:#fffdf8;border-radius:20px;padding:22px;
-  box-shadow:0 20px 60px #0004
-}
-.modal h2{margin:0 0 7px;color:var(--g)}
-.muted{color:var(--muted);font-size:.9rem}
-.field{display:grid;gap:6px;margin:13px 0}
-.field label{font-weight:750;font-size:.9rem}
-.field input,.field select{
-  width:100%;padding:12px;border:1px solid #d9d6cc;
-  border-radius:10px;font:inherit
-}
-.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
-.btn{border:0;border-radius:11px;padding:11px 15px;font:inherit;font-weight:800;cursor:pointer}
-.btn:disabled{opacity:.6;cursor:wait}
-.primary{background:var(--g);color:white}
-.secondary{background:#eee9dd;color:var(--ink)}
-.danger{background:#fae5df;color:#8b2e20}
-.notice{font-size:.82rem;background:#eaf4e9;color:#234d2d;padding:10px 12px;border-radius:10px;margin:12px 0}
-.list{display:grid;gap:9px;margin-top:12px}
-.row{display:flex;align-items:center;gap:7px;border:1px solid var(--line);padding:10px;border-radius:12px}
-.rowname{flex:1;min-width:0;overflow-wrap:anywhere}
-.row small{display:block;color:var(--muted)}
-.row button{padding:8px 9px;border:0;border-radius:8px;cursor:pointer;font-weight:700}
-.error{color:#a42d20;font-size:.9rem;margin-top:8px;white-space:pre-wrap}
-.status{font-size:.9rem;color:var(--muted);padding:12px 2px}
-@media(min-width:600px){
-  main{padding-top:28px}
-  .item{padding:18px}
+.actions { display:flex; gap:9px; flex-wrap:wrap; margin-top:15px; }
+.btn { border:0; border-radius:11px; padding:11px 15px; font:inherit; font-weight:800; cursor:pointer; }
+.btn:disabled { opacity:.6; cursor:wait; }
+.primary { background:var(--g); color:white; }
+.secondary { background:#eee9dd; color:var(--ink); }
+.danger { background:#fae5df; color:#8b2e20; }
+.notice { font-size:.82rem; background:#eaf4e9; color:#234d2d; padding:10px 12px; border-radius:10px; margin:12px 0; }
+.list { display:grid; gap:9px; margin-top:12px; }
+.row { display:flex; align-items:center; gap:7px; border:1px solid var(--line); padding:10px; border-radius:12px; }
+.rowname { flex:1; min-width:0; overflow-wrap:anywhere; }
+.row small { display:block; color:var(--muted); }
+.row button { padding:8px 9px; border:0; border-radius:8px; cursor:pointer; font-weight:700; }
+.error { color:#a42d20; font-size:.9rem; margin-top:8px; white-space:pre-wrap; }
+.status { font-size:.9rem; color:var(--muted); padding:12px 2px; }
+@media(min-width:600px) {
+  main { padding-top:28px; }
+  .item { padding:18px; }
 }
 </style>
 </head>
@@ -135,6 +137,10 @@ footer{text-align:center;color:var(--muted);font-size:.82rem;padding:20px 8px 5p
 </header>
 
 <main>
+  <div class="table-badge" id="tableBadge">
+    Masa numarası kontrol ediliyor…
+  </div>
+
   <div class="heading">
     <h2 id="sectionTitle">Çorbalar</h2>
     <span class="pill">AFİYET OLSUN</span>
@@ -153,13 +159,17 @@ footer{text-align:center;color:var(--muted);font-size:.82rem;padding:20px 8px 5p
     <button class="order-btn" id="orderBtn" type="button" disabled>
       WhatsApp'tan Sipariş Ver
     </button>
-    <p class="order-note">Siparişiniz WhatsApp üzerinden işletmeye iletilmek üzere hazırlanır.</p>
+    <p class="order-note" id="orderNote"></p>
   </div>
 
   <footer>Fiyatlar Türk lirasıdır (TL).</footer>
-  <button class="admin-link" id="openLogin" type="button">Yönetici girişi</button>
+
+  <button class="admin-link" id="openLogin" type="button">
+    Yönetici girişi
+  </button>
 </main>
 
+<!-- YÖNETİCİ GİRİŞİ -->
 <div class="backdrop" id="login">
   <div class="modal">
     <h2>Yönetici Girişi</h2>
@@ -178,18 +188,23 @@ footer{text-align:center;color:var(--muted);font-size:.82rem;padding:20px 8px 5p
   </div>
 </div>
 
+<!-- YÖNETİCİ PANELİ -->
 <div class="backdrop" id="admin">
   <div class="modal">
     <h2>Menüyü Düzenle</h2>
     <p class="muted">Ürün ekle, kategori seç, fiyat değiştir veya sil.</p>
-    <div class="notice">Kaydedilen değişiklikler ortak veritabanına kaydedilir ve diğer cihazlarda görünür.</div>
+    <div class="notice">
+      Kaydedilen değişiklikler ortak menü veritabanına kaydedilir ve bütün masa bağlantılarında görünür.
+    </div>
 
     <form id="itemForm">
       <input id="editId" type="hidden">
+
       <div class="field">
         <label for="name">Ürün adı</label>
         <input id="name" maxlength="80" required placeholder="Örn. Tavuk suyu">
       </div>
+
       <div class="field">
         <label for="category">Kategori</label>
         <select id="category" required>
@@ -200,11 +215,14 @@ footer{text-align:center;color:var(--muted);font-size:.82rem;padding:20px 8px 5p
           <option>Tatlılar</option>
         </select>
       </div>
+
       <div class="field">
         <label for="price">Fiyat (TL)</label>
         <input id="price" type="number" min="0" max="100000" step="0.01" required placeholder="150">
       </div>
+
       <div id="adminError" class="error" role="alert"></div>
+
       <div class="actions">
         <button class="btn primary" id="saveBtn" type="submit">Menüye ekle</button>
         <button class="btn secondary" id="clearBtn" type="button">Temizle</button>
@@ -213,6 +231,7 @@ footer{text-align:center;color:var(--muted);font-size:.82rem;padding:20px 8px 5p
 
     <h3>Mevcut ürünler</h3>
     <div id="list" class="list"></div>
+
     <div class="actions">
       <button class="btn secondary" id="logout" type="button">Çıkış yap</button>
       <button class="btn secondary" type="button" data-close="admin">Kapat</button>
@@ -221,428 +240,484 @@ footer{text-align:center;color:var(--muted);font-size:.82rem;padding:20px 8px 5p
 </div>
 
 <script>
-(()=>{
+(() => {
 'use strict';
 
-/* API adresi ve WhatsApp sipariş numarası */
-const API='/api/menu';
-const WHATSAPP_NUMBER='905404721414';
+/* AYARLAR */
+const API = '/api/menu';
+const WHATSAPP_NUMBER = '905404721414';
 
-const categories=['Çorbalar','Pideler','Izgaralar','İçecekler','Tatlılar'];
-const emojis={
+/*
+  URL /masa1 ile /masa30 arasındaysa masa numarası otomatik bulunur.
+  Örnek: /masa7 -> TABLE_NUMBER = 7
+*/
+function getTableNumber() {
+  const path = window.location.pathname.toLowerCase();
+  const match = path.match(/^\/masa([1-9]|[12][0-9]|30)\/?$/);
+  return match ? Number(match[1]) : null;
+}
+
+const TABLE_NUMBER = getTableNumber();
+
+const categories = [
+  'Çorbalar',
+  'Pideler',
+  'Izgaralar',
+  'İçecekler',
+  'Tatlılar'
+];
+
+const emojis = {
   'Çorbalar':'🍲',
   'Pideler':'🫓',
   'Izgaralar':'🍢',
   'İçecekler':'🥤',
   'Tatlılar':'🍮'
 };
-const $=id=>document.getElementById(id);
 
-let items=[];
-let activeCategory='Çorbalar';
-let adminPassword='';
-let cart={};
+const $ = id => document.getElementById(id);
 
-function money(n){
-  return new Intl.NumberFormat('tr-TR',{
-    maximumFractionDigits:2
-  }).format(Number(n)||0)+' TL';
+let items = [];
+let activeCategory = 'Çorbalar';
+let adminPassword = '';
+let cart = {};
+
+/* MASA BİLGİSİ */
+if (TABLE_NUMBER !== null) {
+  $('tableBadge').textContent = '🪑 Masa ' + TABLE_NUMBER;
+  $('orderNote').textContent =
+    'Siparişiniz otomatik olarak Masa ' + TABLE_NUMBER + ' olarak iletilir.';
+  document.title = 'Tarihi Rumeli Çorbacısı - Masa ' + TABLE_NUMBER;
+} else {
+  $('tableBadge').textContent =
+    '⚠️ Masa bağlantısı bulunamadı. Sipariş vermek için masanıza ait QR kodu okutun.';
+  $('orderNote').textContent =
+    'Masa numarası olmayan sayfalardan sipariş gönderilemez.';
 }
 
-async function api(url,options={}){
-  const headers={
-    'Content-Type':'application/json',
-    ...(options.headers||{})
-  };
-  if(adminPassword) headers['x-admin-password']=adminPassword;
+/* FİYAT */
+function money(n) {
+  return new Intl.NumberFormat('tr-TR', {
+    maximumFractionDigits: 2
+  }).format(Number(n) || 0) + ' TL';
+}
 
-  let r;
-  try{
-    r=await fetch(url,{
-      ...options,headers,cache:'no-store'
+/* API İSTEĞİ */
+async function api(url, options = {}) {
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {})
+  };
+
+  if (adminPassword) {
+    headers['x-admin-password'] = adminPassword;
+  }
+
+  let response;
+
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers,
+      cache: 'no-store'
     });
-  }catch{
+  } catch {
     throw new Error('Sunucuya bağlanılamadı. İnternet bağlantısını kontrol edin.');
   }
 
-  const t=await r.text();
-  let d=null;
-  try{d=t?JSON.parse(t):null}catch{}
+  const text = await response.text();
+  let data = null;
 
-  if(!r.ok){
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {}
+
+  if (!response.ok) {
     throw new Error(
-      d?.error||
-      (r.status===404
-        ?'API adresi bulunamadı. Netlify yönlendirmesini kontrol edin.'
-        :'İstek başarısız ('+r.status+').')
+      data?.error ||
+      (response.status === 404
+        ? 'API adresi bulunamadı. Mevcut Netlify arka ucunu kontrol edin.'
+        : 'İstek başarısız (' + response.status + ').')
     );
   }
 
-  if(d===null&&t){
-    throw new Error('Sunucudan beklenmeyen yanıt geldi. Netlify yönlendirmesini kontrol edin.');
+  if (data === null && text) {
+    throw new Error('Sunucudan beklenmeyen yanıt geldi.');
   }
-  return d;
+
+  return data;
 }
 
-async function loadMenu(){
-  $('menu').innerHTML='<p class="status">Menü yükleniyor…</p>';
+/* MENÜYÜ YÜKLE */
+async function loadMenu() {
+  $('menu').innerHTML = '<p class="status">Menü yükleniyor…</p>';
 
-  try{
-    const d=await api(API);
-    if(!Array.isArray(d)) throw new Error('Menü verisi okunamadı.');
+  try {
+    const data = await api(API);
 
-    items=d.map(x=>({
-      ...x,
-      id:x.id,
-      name:String(x.name),
-      category:categories.includes(x.category)?x.category:'Çorbalar',
-      price:Number(x.price)
+    if (!Array.isArray(data)) {
+      throw new Error('Menü verisi okunamadı.');
+    }
+
+    items = data.map(item => ({
+      ...item,
+      id: item.id,
+      name: String(item.name),
+      category: categories.includes(item.category) ? item.category : 'Çorbalar',
+      price: Number(item.price)
     }));
 
-    const validIds=new Set(items.map(x=>String(x.id)));
-    Object.keys(cart).forEach(id=>{
-      if(!validIds.has(String(id))) delete cart[id];
+    const validIds = new Set(items.map(item => String(item.id)));
+
+    Object.keys(cart).forEach(id => {
+      if (!validIds.has(String(id))) delete cart[id];
     });
 
     render();
     renderList();
     updateOrder();
-  }catch(e){
+  } catch (error) {
     $('menu').replaceChildren();
-    const p=document.createElement('p');
-    p.className='error';
-    p.textContent='Menü yüklenemedi: '+e.message;
+    const p = document.createElement('p');
+    p.className = 'error';
+    p.textContent = 'Menü yüklenemedi: ' + error.message;
     $('menu').append(p);
   }
 }
 
-function renderCategories(){
-  const nav=$('categories');
+/* KATEGORİLER */
+function renderCategories() {
+  const nav = $('categories');
   nav.replaceChildren();
 
-  categories.forEach(c=>{
-    const b=document.createElement('button');
-    b.type='button';
-    b.className='category'+(c===activeCategory?' active':'');
-    b.textContent=c;
-    b.setAttribute('aria-pressed',String(c===activeCategory));
-    b.onclick=()=>{activeCategory=c;render()};
-    nav.append(b);
+  categories.forEach(category => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'category' + (category === activeCategory ? ' active' : '');
+    button.textContent = category;
+    button.setAttribute('aria-pressed', String(category === activeCategory));
+
+    button.onclick = () => {
+      activeCategory = category;
+      render();
+    };
+
+    nav.append(button);
   });
 
-  $('sectionTitle').textContent=activeCategory;
+  $('sectionTitle').textContent = activeCategory;
 }
 
-function render(){
+/* MENÜYÜ GÖSTER */
+function render() {
   renderCategories();
-  const m=$('menu');
-  m.replaceChildren();
 
-  const visible=items.filter(x=>x.category===activeCategory);
+  const menu = $('menu');
+  menu.replaceChildren();
 
-  if(!visible.length){
-    const p=document.createElement('p');
-    p.className='muted';
-    p.textContent='Bu kategoride henüz ürün yok.';
-    m.append(p);
+  const visibleItems = items.filter(item => item.category === activeCategory);
+
+  if (!visibleItems.length) {
+    const p = document.createElement('p');
+    p.className = 'muted';
+    p.textContent = 'Bu kategoride henüz ürün yok.';
+    menu.append(p);
     return;
   }
 
-  visible.forEach(x=>{
-    const card=document.createElement('article');
-    card.className='item';
+  visibleItems.forEach(item => {
+    const card = document.createElement('article');
+    card.className = 'item';
 
-    const bowl=document.createElement('div');
-    bowl.className='bowl';
-    bowl.textContent=emojis[x.category]||'🍽️';
+    const bowl = document.createElement('div');
+    bowl.className = 'bowl';
+    bowl.textContent = emojis[item.category] || '🍽️';
 
-    const info=document.createElement('div');
-    info.className='info';
+    const info = document.createElement('div');
+    info.className = 'info';
 
-    const h=document.createElement('h3');
-    h.textContent=x.name;
+    const title = document.createElement('h3');
+    title.textContent = item.name;
 
-    const p=document.createElement('p');
-    p.textContent=x.category;
+    const category = document.createElement('p');
+    category.textContent = item.category;
 
-    info.append(h,p);
+    info.append(title, category);
 
-    const controls=document.createElement('div');
-    controls.className='order-controls';
+    const controls = document.createElement('div');
+    controls.className = 'order-controls';
 
-    const minus=document.createElement('button');
-    minus.type='button';
-    minus.className='qty-btn';
-    minus.textContent='−';
-    minus.setAttribute('aria-label',x.name+' azalt');
+    const minus = document.createElement('button');
+    minus.type = 'button';
+    minus.className = 'qty-btn';
+    minus.textContent = '−';
+    minus.setAttribute('aria-label', item.name + ' miktarını azalt');
 
-    const qty=document.createElement('span');
-    qty.className='qty';
-    qty.textContent=cart[x.id]||0;
+    const quantity = document.createElement('span');
+    quantity.className = 'qty';
+    quantity.textContent = cart[item.id] || 0;
 
-    const plus=document.createElement('button');
-    plus.type='button';
-    plus.className='qty-btn';
-    plus.textContent='+';
-    plus.setAttribute('aria-label',x.name+' artır');
+    const plus = document.createElement('button');
+    plus.type = 'button';
+    plus.className = 'qty-btn';
+    plus.textContent = '+';
+    plus.setAttribute('aria-label', item.name + ' miktarını artır');
 
-    minus.onclick=()=>{
-      const current=cart[x.id]||0;
-      if(current<=1) delete cart[x.id];
-      else cart[x.id]=current-1;
+    minus.onclick = () => {
+      const current = cart[item.id] || 0;
+      if (current <= 1) delete cart[item.id];
+      else cart[item.id] = current - 1;
       render();
       updateOrder();
     };
 
-    plus.onclick=()=>{
-      const current=cart[x.id]||0;
-      if(current>=99) return;
-      cart[x.id]=current+1;
+    plus.onclick = () => {
+      const current = cart[item.id] || 0;
+      if (current < 99) cart[item.id] = current + 1;
       render();
       updateOrder();
     };
 
-    controls.append(minus,qty,plus);
+    controls.append(minus, quantity, plus);
     info.append(controls);
 
-    const price=document.createElement('div');
-    price.className='price';
-    price.textContent=money(x.price);
+    const price = document.createElement('div');
+    price.className = 'price';
+    price.textContent = money(item.price);
 
-    card.append(bowl,info,price);
-    m.append(card);
+    card.append(bowl, info, price);
+    menu.append(card);
   });
 }
 
-function getCartItems(){
+/* SEPET */
+function getCartItems() {
   return items
-    .filter(x=>Number(cart[x.id]||0)>0)
-    .map(x=>({item:x,quantity:Number(cart[x.id])}));
+    .filter(item => Number(cart[item.id] || 0) > 0)
+    .map(item => ({
+      item,
+      quantity: Number(cart[item.id])
+    }));
 }
 
-function calculateTotal(){
+function calculateTotal() {
   return getCartItems().reduce(
-    (total,row)=>total+row.item.price*row.quantity,0
+    (total, row) => total + row.item.price * row.quantity,
+    0
   );
 }
 
-function updateOrder(){
-  $('orderTotal').textContent=money(calculateTotal());
-  $('orderBtn').disabled=getCartItems().length===0;
+function updateOrder() {
+  $('orderTotal').textContent = money(calculateTotal());
+
+  $('orderBtn').disabled =
+    TABLE_NUMBER === null || getCartItems().length === 0;
 }
 
-/* WhatsApp mesajını Türkçe karakterlerle doğru biçimde hazırla. */
-function sendWhatsAppOrder(){
-  const cartItems=getCartItems();
+/* WHATSAPP SİPARİŞİ */
+function sendWhatsAppOrder() {
+  if (TABLE_NUMBER === null) {
+    alert('Masa numarası bulunamadı. Lütfen masanıza ait QR kodu okutun.');
+    return;
+  }
 
-  if(!cartItems.length){
+  const cartItems = getCartItems();
+
+  if (!cartItems.length) {
     alert('Lütfen sipariş vermek için en az bir ürün seçin.');
     return;
   }
 
-  const lines=[
+  const lines = [
     'Merhaba, Tarihi Rumeli Çorbacısı’ndan sipariş vermek istiyorum.',
+    '',
+    'Masa numarası: ' + TABLE_NUMBER +
+      '. masa numarasından geldi bu sipariş',
     '',
     'SİPARİŞİM'
   ];
 
-  cartItems.forEach(row=>{
+  cartItems.forEach(row => {
     lines.push(
-      '• '+row.item.name+
-      ' x '+row.quantity+
-      ' = '+money(row.item.price*row.quantity)
+      '• ' + row.item.name +
+      ' x ' + row.quantity +
+      ' = ' + money(row.item.price * row.quantity)
     );
   });
 
   lines.push('');
-  lines.push('TOPLAM: '+money(calculateTotal()));
+  lines.push('TOPLAM: ' + money(calculateTotal()));
   lines.push('');
   lines.push('Siparişimi onaylamak istiyorum.');
 
-  const url='https://wa.me/'+WHATSAPP_NUMBER+
-    '?text='+encodeURIComponent(lines.join('\n'));
+  const url =
+    'https://wa.me/' + WHATSAPP_NUMBER +
+    '?text=' + encodeURIComponent(lines.join('\n'));
 
-  window.open(url,'_blank','noopener,noreferrer');
+  window.open(url, '_blank', 'noopener,noreferrer');
 }
 
-$('orderBtn').addEventListener('click',sendWhatsAppOrder);
+$('orderBtn').addEventListener('click', sendWhatsAppOrder);
 
-function reset(){
+/* YÖNETİCİ PANELİ */
+function resetForm() {
   $('itemForm').reset();
-  $('editId').value='';
-  $('category').value=activeCategory;
-  $('saveBtn').textContent='Menüye ekle';
-  $('adminError').textContent='';
+  $('editId').value = '';
+  $('category').value = activeCategory;
+  $('saveBtn').textContent = 'Menüye ekle';
+  $('adminError').textContent = '';
 }
 
-function renderList(){
-  const list=$('list');
+function renderList() {
+  const list = $('list');
   list.replaceChildren();
 
-  if(!items.length){
-    const p=document.createElement('p');
-    p.className='muted';
-    p.textContent='Henüz ürün yok.';
+  if (!items.length) {
+    const p = document.createElement('p');
+    p.className = 'muted';
+    p.textContent = 'Henüz ürün yok.';
     list.append(p);
     return;
   }
 
-  items.forEach(x=>{
-    const row=document.createElement('div');
-    row.className='row';
+  items.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'row';
 
-    const n=document.createElement('div');
-    n.className='rowname';
+    const name = document.createElement('div');
+    name.className = 'rowname';
 
-    const b=document.createElement('strong');
-    b.textContent=x.name;
+    const strong = document.createElement('strong');
+    strong.textContent = item.name;
 
-    const s=document.createElement('small');
-    s.textContent=x.category+' · '+money(x.price);
-    n.append(b,s);
+    const small = document.createElement('small');
+    small.textContent = item.category + ' · ' + money(item.price);
 
-    const edit=document.createElement('button');
-    edit.className='secondary';
-    edit.type='button';
-    edit.textContent='Düzenle';
+    name.append(strong, small);
 
-    edit.onclick=()=>{
-      $('editId').value=x.id;
-      $('name').value=x.name;
-      $('category').value=x.category;
-      $('price').value=x.price;
-      $('saveBtn').textContent='Değişiklikleri kaydet';
-      $('adminError').textContent='';
+    const edit = document.createElement('button');
+    edit.className = 'secondary';
+    edit.type = 'button';
+    edit.textContent = 'Düzenle';
+
+    edit.onclick = () => {
+      $('editId').value = item.id;
+      $('name').value = item.name;
+      $('category').value = item.category;
+      $('price').value = item.price;
+      $('saveBtn').textContent = 'Değişiklikleri kaydet';
+      $('adminError').textContent = '';
       $('name').focus();
     };
 
-    const del=document.createElement('button');
-    del.className='danger';
-    del.type='button';
-    del.textContent='Sil';
+    const remove = document.createElement('button');
+    remove.className = 'danger';
+    remove.type = 'button';
+    remove.textContent = 'Sil';
 
-    del.onclick=async()=>{
-      if(!confirm(x.name+' menüden silinsin mi?')) return;
-      del.disabled=true;
+    remove.onclick = async () => {
+      if (!confirm(item.name + ' menüden silinsin mi?')) return;
 
-      try{
-        await api(API+'?id='+encodeURIComponent(x.id),{method:'DELETE'});
-        delete cart[x.id];
+      remove.disabled = true;
+
+      try {
+        await api(API + '?id=' + encodeURIComponent(item.id), {
+          method: 'DELETE'
+        });
+
+        delete cart[item.id];
         await loadMenu();
-        reset();
-      }catch(e){
-        $('adminError').textContent='Silinemedi: '+e.message;
-        del.disabled=false;
+        resetForm();
+      } catch (error) {
+        $('adminError').textContent = 'Silinemedi: ' + error.message;
+        remove.disabled = false;
       }
     };
 
-    row.append(n,edit,del);
+    row.append(name, edit, remove);
     list.append(row);
   });
 }
 
-function show(id){$(id).classList.add('show')}
-function hide(id){$(id).classList.remove('show')}
+/* MODALLAR */
+function show(id) {
+  $(id).classList.add('show');
+}
 
-$('openLogin').onclick=()=>{
-  $('password').value='';
-  $('error').textContent='';
+function hide(id) {
+  $(id).classList.remove('show');
+}
+
+$('openLogin').onclick = () => {
+  $('password').value = '';
+  $('error').textContent = '';
   show('login');
   $('password').focus();
 };
 
-$('loginForm').onsubmit=async e=>{
-  e.preventDefault();
-  const btn=$('loginBtn');
-  btn.disabled=true;
-  $('error').textContent='';
-  const candidate=$('password').value;
+/* YÖNETİCİ GİRİŞİ */
+$('loginForm').onsubmit = async event => {
+  event.preventDefault();
 
-  try{
-    const r=await fetch(API+'?action=login',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({password:candidate}),
-      cache:'no-store'
+  const button = $('loginBtn');
+  button.disabled = true;
+  $('error').textContent = '';
+
+  const candidate = $('password').value;
+
+  try {
+    const response = await fetch(API + '?action=login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: candidate }),
+      cache: 'no-store'
     });
 
-    const d=await r.json().catch(()=>({}));
-    if(!r.ok||!d.ok) throw new Error(d.error||'Giriş yapılamadı.');
+    const data = await response.json().catch(() => ({}));
 
-    adminPassword=candidate;
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || 'Giriş yapılamadı.');
+    }
+
+    adminPassword = candidate;
     hide('login');
-    reset();
+    resetForm();
     renderList();
     show('admin');
-  }catch(err){
-    $('error').textContent=err.message||'Giriş başarısız.';
-  }finally{
-    btn.disabled=false;
+  } catch (error) {
+    $('error').textContent = error.message || 'Giriş başarısız.';
+  } finally {
+    button.disabled = false;
   }
 };
 
-$('itemForm').onsubmit=async e=>{
-  e.preventDefault();
-  const btn=$('saveBtn');
-  btn.disabled=true;
-  $('adminError').textContent='';
+/* ÜRÜN EKLEME VE DÜZENLEME */
+$('itemForm').onsubmit = async event => {
+  event.preventDefault();
 
-  const name=$('name').value.trim();
-  const category=$('category').value;
-  const price=Number($('price').value);
-  const id=$('editId').value;
+  const button = $('saveBtn');
+  button.disabled = true;
+  $('adminError').textContent = '';
 
-  if(!name||!categories.includes(category)||!Number.isFinite(price)||price<0){
-    $('adminError').textContent='Ürün adı, kategori ve geçerli fiyat gir.';
-    btn.disabled=false;
+  const name = $('name').value.trim();
+  const category = $('category').value;
+  const price = Number($('price').value);
+  const id = $('editId').value;
+
+  if (
+    !name ||
+    !categories.includes(category) ||
+    !Number.isFinite(price) ||
+    price < 0
+  ) {
+    $('adminError').textContent =
+      'Ürün adı, kategori ve geçerli fiyat gir.';
+    button.disabled = false;
     return;
   }
 
-  try{
-    const body=JSON.stringify({name,category,price});
+  try {
+    const body = JSON.stringify({ name, category, price });
 
-    if(id){
-      await api(API+'?id='+encodeURIComponent(id),{method:'PUT',body});
-    }else{
-      await api(API,{method:'POST',body});
-    }
-
-    activeCategory=category;
-    await loadMenu();
-    reset();
-  }catch(err){
-    $('adminError').textContent='Kaydedilemedi: '+err.message;
-  }finally{
-    btn.disabled=false;
-  }
-};
-
-$('clearBtn').onclick=reset;
-
-$('logout').onclick=()=>{
-  adminPassword='';
-  hide('admin');
-  reset();
-};
-
-document.querySelectorAll('[data-close]').forEach(b=>{
-  b.onclick=()=>hide(b.dataset.close);
-});
-
-document.querySelectorAll('.backdrop').forEach(b=>{
-  b.onclick=e=>{
-    if(e.target===b) hide(b.id);
-  };
-});
-
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){
-    document.querySelectorAll('.backdrop.show').forEach(x=>hide(x.id));
-  }
-});
-
-loadMenu();
-})();
-</script>
-</body>
-</html>
+    if (id) {
+      await api(API + '?id=' + encodeUR
