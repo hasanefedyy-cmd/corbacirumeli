@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="tr">
 <head>
@@ -41,64 +42,172 @@ main { max-width:720px; margin:auto; padding:22px 15px 40px; }
   font-weight:900;
   margin-bottom:18px;
 }
-.heading { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px; }
-.heading h2 { margin:0; font-size:1.25rem; }
-.pill { background:#f3e7cd; color:#6b4a12; border-radius:99px; padding:6px 10px; font-size:.75rem; font-weight:800; }
-.categories { display:flex; gap:8px; overflow-x:auto; padding:2px 1px 12px; margin-bottom:4px; }
-.category {
-  flex:0 0 auto; border:1px solid var(--line); background:#fff;
-  color:var(--g); padding:10px 14px; border-radius:999px;
-  font:inherit; font-size:.9rem; font-weight:800; cursor:pointer;
+.heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:14px;
 }
-.category.active { background:var(--g); border-color:var(--g); color:#fff; }
+.heading h2 { margin:0; font-size:1.25rem; }
+.pill {
+  background:#f3e7cd;
+  color:#6b4a12;
+  border-radius:99px;
+  padding:6px 10px;
+  font-size:.75rem;
+  font-weight:800;
+}
+.categories {
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:2px 1px 12px;
+  margin-bottom:4px;
+}
+.category {
+  flex:0 0 auto;
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--g);
+  padding:10px 14px;
+  border-radius:999px;
+  font:inherit;
+  font-size:.9rem;
+  font-weight:800;
+  cursor:pointer;
+}
+.category.active {
+  background:var(--g);
+  border-color:var(--g);
+  color:#fff;
+}
 .menu { display:grid; gap:13px; }
 .item {
-  display:flex; align-items:center; gap:12px; background:white;
-  border:1px solid var(--line); border-radius:18px; padding:14px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:white;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
   box-shadow:0 4px 14px #392a0a08;
 }
 .bowl {
-  width:54px; height:54px; flex:0 0 54px; display:grid;
-  place-items:center; background:#f7ead1; border-radius:14px; font-size:1.8rem;
+  width:54px;
+  height:54px;
+  flex:0 0 54px;
+  display:grid;
+  place-items:center;
+  background:#f7ead1;
+  border-radius:14px;
+  font-size:1.8rem;
 }
 .info { flex:1; min-width:0; }
-.item h3 { margin:0 0 5px; font-size:1rem; overflow-wrap:anywhere; }
+.item h3 {
+  margin:0 0 5px;
+  font-size:1rem;
+  overflow-wrap:anywhere;
+}
 .item p { margin:0; color:var(--muted); font-size:.85rem; }
-.price { font-size:1rem; font-weight:900; color:var(--g); white-space:nowrap; }
-.order-controls { display:flex; align-items:center; gap:9px; margin-top:10px; }
+.price {
+  font-size:1rem;
+  font-weight:900;
+  color:var(--g);
+  white-space:nowrap;
+}
+.order-controls {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin-top:10px;
+}
 .qty-btn {
-  width:34px; height:34px; border:0; border-radius:9px;
-  background:#eee9dd; color:var(--g); font-size:1.25rem; font-weight:900; cursor:pointer;
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:9px;
+  background:#eee9dd;
+  color:var(--g);
+  font-size:1.25rem;
+  font-weight:900;
+  cursor:pointer;
 }
 .qty { min-width:20px; text-align:center; font-weight:900; }
 .order-box {
-  position:sticky; bottom:10px; margin-top:20px; background:#fff;
-  border:1px solid var(--line); border-radius:18px; padding:16px;
-  box-shadow:0 8px 30px #392a0a20; z-index:2;
+  position:sticky;
+  bottom:10px;
+  margin-top:20px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  box-shadow:0 8px 30px #392a0a20;
+  z-index:2;
 }
-.order-summary { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px; }
+.order-summary {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+}
 .total { color:var(--g); font-size:1.3rem; font-weight:950; }
 .order-btn {
-  width:100%; border:0; border-radius:12px; padding:14px;
-  background:#168447; color:white; font:inherit; font-weight:900;
-  font-size:1rem; cursor:pointer;
+  width:100%;
+  border:0;
+  border-radius:12px;
+  padding:14px;
+  background:#168447;
+  color:white;
+  font:inherit;
+  font-weight:900;
+  font-size:1rem;
+  cursor:pointer;
 }
 .order-btn:disabled { opacity:.5; cursor:not-allowed; }
-.order-note { text-align:center; color:var(--muted); font-size:.76rem; margin:9px 0 0; }
-footer { text-align:center; color:var(--muted); font-size:.82rem; padding:20px 8px 5px; }
+.order-note {
+  text-align:center;
+  color:var(--muted);
+  font-size:.76rem;
+  margin:9px 0 0;
+}
+footer {
+  text-align:center;
+  color:var(--muted);
+  font-size:.82rem;
+  padding:20px 8px 5px;
+}
 .admin-link {
-  display:block; margin:18px auto 0; border:0; background:transparent;
-  color:#858a82; text-decoration:underline; text-underline-offset:4px;
-  font-size:.82rem; padding:8px; cursor:pointer;
+  display:block;
+  margin:18px auto 0;
+  border:0;
+  background:transparent;
+  color:#858a82;
+  text-decoration:underline;
+  text-underline-offset:4px;
+  font-size:.82rem;
+  padding:8px;
+  cursor:pointer;
 }
 .backdrop {
-  display:none; position:fixed; inset:0; background:#0c1b12b8;
-  align-items:center; justify-content:center; padding:14px; z-index:5;
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#0c1b12b8;
+  align-items:center;
+  justify-content:center;
+  padding:14px;
+  z-index:5;
 }
 .backdrop.show { display:flex; }
 .modal {
-  width:min(460px,100%); max-height:90vh; overflow:auto;
-  background:#fffdf8; border-radius:20px; padding:22px;
+  width:min(460px,100%);
+  max-height:90vh;
+  overflow:auto;
+  background:#fffdf8;
+  border-radius:20px;
+  padding:22px;
   box-shadow:0 20px 60px #0004;
 }
 .modal h2 { margin:0 0 7px; color:var(--g); }
@@ -106,22 +215,57 @@ footer { text-align:center; color:var(--muted); font-size:.82rem; padding:20px 8
 .field { display:grid; gap:6px; margin:13px 0; }
 .field label { font-weight:750; font-size:.9rem; }
 .field input,.field select {
-  width:100%; padding:12px; border:1px solid #d9d6cc;
-  border-radius:10px; font:inherit;
+  width:100%;
+  padding:12px;
+  border:1px solid #d9d6cc;
+  border-radius:10px;
+  font:inherit;
 }
 .actions { display:flex; gap:9px; flex-wrap:wrap; margin-top:15px; }
-.btn { border:0; border-radius:11px; padding:11px 15px; font:inherit; font-weight:800; cursor:pointer; }
+.btn {
+  border:0;
+  border-radius:11px;
+  padding:11px 15px;
+  font:inherit;
+  font-weight:800;
+  cursor:pointer;
+}
 .btn:disabled { opacity:.6; cursor:wait; }
 .primary { background:var(--g); color:white; }
 .secondary { background:#eee9dd; color:var(--ink); }
 .danger { background:#fae5df; color:#8b2e20; }
-.notice { font-size:.82rem; background:#eaf4e9; color:#234d2d; padding:10px 12px; border-radius:10px; margin:12px 0; }
+.notice {
+  font-size:.82rem;
+  background:#eaf4e9;
+  color:#234d2d;
+  padding:10px 12px;
+  border-radius:10px;
+  margin:12px 0;
+}
 .list { display:grid; gap:9px; margin-top:12px; }
-.row { display:flex; align-items:center; gap:7px; border:1px solid var(--line); padding:10px; border-radius:12px; }
+.row {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  border:1px solid var(--line);
+  padding:10px;
+  border-radius:12px;
+}
 .rowname { flex:1; min-width:0; overflow-wrap:anywhere; }
 .row small { display:block; color:var(--muted); }
-.row button { padding:8px 9px; border:0; border-radius:8px; cursor:pointer; font-weight:700; }
-.error { color:#a42d20; font-size:.9rem; margin-top:8px; white-space:pre-wrap; }
+.row button {
+  padding:8px 9px;
+  border:0;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:700;
+}
+.error {
+  color:#a42d20;
+  font-size:.9rem;
+  margin-top:8px;
+  white-space:pre-wrap;
+}
 .status { font-size:.9rem; color:var(--muted); padding:12px 2px; }
 @media(min-width:600px) {
   main { padding-top:28px; }
@@ -147,6 +291,7 @@ footer { text-align:center; color:var(--muted); font-size:.82rem; padding:20px 8
   </div>
 
   <nav class="categories" id="categories" aria-label="Menü kategorileri"></nav>
+
   <section id="menu" class="menu" aria-live="polite">
     <p class="status">Menü yükleniyor…</p>
   </section>
@@ -169,17 +314,19 @@ footer { text-align:center; color:var(--muted); font-size:.82rem; padding:20px 8
   </button>
 </main>
 
-<!-- YÖNETİCİ GİRİŞİ -->
 <div class="backdrop" id="login">
   <div class="modal">
     <h2>Yönetici Girişi</h2>
     <p class="muted">Menüyü düzenlemek için yönetici şifreni gir.</p>
+
     <form id="loginForm">
       <div class="field">
         <label for="password">Şifre</label>
         <input id="password" type="password" autocomplete="current-password" required>
       </div>
+
       <div id="error" class="error" role="alert"></div>
+
       <div class="actions">
         <button class="btn primary" id="loginBtn" type="submit">Giriş yap</button>
         <button class="btn secondary" type="button" data-close="login">Vazgeç</button>
@@ -188,11 +335,11 @@ footer { text-align:center; color:var(--muted); font-size:.82rem; padding:20px 8
   </div>
 </div>
 
-<!-- YÖNETİCİ PANELİ -->
 <div class="backdrop" id="admin">
   <div class="modal">
     <h2>Menüyü Düzenle</h2>
     <p class="muted">Ürün ekle, kategori seç, fiyat değiştir veya sil.</p>
+
     <div class="notice">
       Kaydedilen değişiklikler ortak menü veritabanına kaydedilir ve bütün masa bağlantılarında görünür.
     </div>
@@ -247,10 +394,6 @@ footer { text-align:center; color:var(--muted); font-size:.82rem; padding:20px 8
 const API = '/api/menu';
 const WHATSAPP_NUMBER = '905404721414';
 
-/*
-  URL /masa1 ile /masa30 arasındaysa masa numarası otomatik bulunur.
-  Örnek: /masa7 -> TABLE_NUMBER = 7
-*/
 function getTableNumber() {
   const path = window.location.pathname.toLowerCase();
   const match = path.match(/^\/masa([1-9]|[12][0-9]|30)\/?$/);
@@ -336,7 +479,7 @@ async function api(url, options = {}) {
     throw new Error(
       data?.error ||
       (response.status === 404
-        ? 'API adresi bulunamadı. Mevcut Netlify arka ucunu kontrol edin.'
+        ? 'API adresi bulunamadı. Netlify arka ucunu kontrol edin.'
         : 'İstek başarısız (' + response.status + ').')
     );
   }
@@ -378,6 +521,7 @@ async function loadMenu() {
     updateOrder();
   } catch (error) {
     $('menu').replaceChildren();
+
     const p = document.createElement('p');
     p.className = 'error';
     p.textContent = 'Menü yüklenemedi: ' + error.message;
@@ -393,9 +537,13 @@ function renderCategories() {
   categories.forEach(category => {
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = 'category' + (category === activeCategory ? ' active' : '');
+    button.className = 'category' +
+      (category === activeCategory ? ' active' : '');
     button.textContent = category;
-    button.setAttribute('aria-pressed', String(category === activeCategory));
+    button.setAttribute(
+      'aria-pressed',
+      String(category === activeCategory)
+    );
 
     button.onclick = () => {
       activeCategory = category;
@@ -415,7 +563,9 @@ function render() {
   const menu = $('menu');
   menu.replaceChildren();
 
-  const visibleItems = items.filter(item => item.category === activeCategory);
+  const visibleItems = items.filter(
+    item => item.category === activeCategory
+  );
 
   if (!visibleItems.length) {
     const p = document.createElement('p');
@@ -465,15 +615,24 @@ function render() {
 
     minus.onclick = () => {
       const current = cart[item.id] || 0;
-      if (current <= 1) delete cart[item.id];
-      else cart[item.id] = current - 1;
+
+      if (current <= 1) {
+        delete cart[item.id];
+      } else {
+        cart[item.id] = current - 1;
+      }
+
       render();
       updateOrder();
     };
 
     plus.onclick = () => {
       const current = cart[item.id] || 0;
-      if (current < 99) cart[item.id] = current + 1;
+
+      if (current < 99) {
+        cart[item.id] = current + 1;
+      }
+
       render();
       updateOrder();
     };
@@ -531,8 +690,7 @@ function sendWhatsAppOrder() {
   const lines = [
     'Merhaba, Tarihi Rumeli Çorbacısı’ndan sipariş vermek istiyorum.',
     '',
-    'Masa numarası: ' + TABLE_NUMBER +
-      '. masa numarasından geldi bu sipariş',
+    'Masa numarası: ' + TABLE_NUMBER,
     '',
     'SİPARİŞİM'
   ];
@@ -554,7 +712,7 @@ function sendWhatsAppOrder() {
     'https://wa.me/' + WHATSAPP_NUMBER +
     '?text=' + encodeURIComponent(lines.join('\n'));
 
-  window.open(url, '_blank', 'noopener,noreferrer');
+  window.open(url, '_blank');
 }
 
 $('orderBtn').addEventListener('click', sendWhatsAppOrder);
@@ -629,7 +787,8 @@ function renderList() {
         await loadMenu();
         resetForm();
       } catch (error) {
-        $('adminError').textContent = 'Silinemedi: ' + error.message;
+        $('adminError').textContent =
+          'Silinemedi: ' + error.message;
         remove.disabled = false;
       }
     };
@@ -716,8 +875,4 @@ $('itemForm').onsubmit = async event => {
     return;
   }
 
-  try {
-    const body = JSON.stringify({ name, category, price });
-
-    if (id) {
-      await api(API + '?id=' + encodeUR
+  tr
