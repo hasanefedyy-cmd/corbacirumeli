@@ -446,111 +446,161 @@
 
     function renderCart() {
       const entries = [...state.cart.entries()];
+<script>
+(() => {
+  "use strict";
 
-      if (entries.length === 0) {
-        $("cartItems").innerHTML = '<div class="empty">Sepetiniz henüz boş.</div>';
-      } else {
-        $("cartItems").innerHTML = entries.map(([id, entry]) => `
-          <div class="cart-row">
-            <div>
-              <strong>${escapeText(entry.product.name)}</strong><br>
-              <small>${money(entry.product.price * entry.quantity)}</small>
-            </div>
-            <div class="quantity">
-              <button type="button" data-minus="${escapeText(id)}" aria-label="Azalt">−</button>
-              <span>${entry.quantity}</span>
-              <button type="button" data-plus="${escapeText(id)}" aria-label="Artır">+</button>
-            </div>
-          </div>
-        `).join("");
+  // WhatsApp işletme numarası: ülke koduyla, + işareti olmadan
+  const WHATSAPP_NUMBER = "905404721414";
+
+  // URL'den masa numarasını oku:
+  // ?masa=7, ?table=7, ?masano=7, ?masa_no=7 veya ?m=7
+  function getTableNumber() {
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+
+    const acceptedKeys = [
+      "masa",
+      "table",
+      "masano",
+      "masa_no",
+      "masa-no",
+      "m"
+    ];
+
+    for (const [key, value] of params.entries()) {
+      if (acceptedKeys.includes(key.toLowerCase())) {
+        const match = value.trim().match(/^\d{1,3}$/);
+
+        if (match) {
+          const number = Number(match[0]);
+
+          if (number >= 1 && number <= 500) {
+            return String(number);
+          }
+        }
       }
+    }
 
-      const total = entries.reduce(
-        (sum, [, entry]) => sum + entry.product.price * entry.quantity,
-        0
+    // Alternatif URL biçimi: /masa/7
+    const pathMatch = url.pathname.match(/\/masa\/(\d+)\/?$/i);
+
+    if (pathMatch) {
+      const number = Number(pathMatch[1]);
+
+      if (number >= 1 && number <= 500) {
+        return String(number);
+      }
+    }
+
+    return null;
+  }
+
+  // Sayfa açılırken masa bilgisini bir kez al.
+  const tableNumber = getTableNumber();
+
+  // Masa göstergesini sayfada güncelle.
+  function updateTableDisplay() {
+    const selectors = [
+      "#tableBadge",
+      "#tableNumber",
+      "#masaNumarasi",
+      "#masa-bilgisi",
+      "[data-table-number]"
+    ];
+
+    for (const selector of selectors) {
+      document.querySelectorAll(selector).forEach(element => {
+        element.textContent = tableNumber
+          ? "Masa " + tableNumber
+          : "Masa bilgisi bulunamadı";
+      });
+    }
+  }
+
+  // Sipariş mesajını oluşturup WhatsApp'ı aç.
+  // Sepet değişkeni olarak mevcut projendeki cart dizisi kullanılmalıdır.
+  function sendOrder() {
+    const currentTable = getTableNumber();
+
+    // Mevcut sayfada kullanılan sepet değişkeni: cart
+    if (typeof cart === "undefined" || !Array.isArray(cart) || cart.length === 0) {
+      alert("Lütfen önce sepetine ürün ekle.");
+      return;
+    }
+
+    const lines = [];
+    lines.push("TARİHİ RUMELİ ÇORBACISI - SİPARİŞ");
+    lines.push("");
+
+    // MASA NUMARASI MESAJIN BAŞINDA YER ALIR
+    lines.push(
+      "MASA NUMARASI: " +
+      (currentTable ? currentTable : "URL'de masa numarası bulunamadı")
+    );
+
+    lines.push("");
+    lines.push("SİPARİŞ DETAYLARI:");
+
+    let total = 0;
+
+    cart.forEach(item => {
+      const name = item.name || item.title || "Ürün";
+      const quantity = Number(item.quantity ?? item.qty ?? 1);
+      const price = Number(item.price ?? 0);
+      const subtotal = price * quantity;
+
+      total += subtotal;
+
+      lines.push(
+        `${name} x ${quantity} = ${subtotal.toLocaleString("tr-TR")} TL`
       );
+    });
 
-      $("cartTotal").textContent = money(total);
+    lines.push("");
+    lines.push("TOPLAM: " + total.toLocaleString("tr-TR") + " TL");
 
-      $("cartItems").querySelectorAll("[data-minus]").forEach(button => {
-        button.addEventListener("click", () => changeQuantity(button.dataset.minus, -1));
+    const message = lines.join("\n");
+
+    const whatsappURL =
+      "https://wa.me/" +
+      WHATSAPP_NUMBER +
+      "?text=" +
+      encodeURIComponent(message);
+
+    window.location.href = whatsappURL;
+  }
+
+  // Mevcut HTML'deki sipariş butonuna bağla.
+  function connectOrderButton() {
+    const buttonSelectors = [
+      "#sendOrder",
+      "#orderButton",
+      "#whatsappOrder",
+      "#checkoutButton",
+      "[data-send-order]"
+    ];
+
+    for (const selector of buttonSelectors) {
+      document.querySelectorAll(selector).forEach(button => {
+        button.addEventListener("click", function (event) {
+          event.preventDefault();
+          sendOrder();
+        });
       });
-
-      $("cartItems").querySelectorAll("[data-plus]").forEach(button => {
-        button.addEventListener("click", () => changeQuantity(button.dataset.plus, 1));
-      });
     }
 
-    // URL'deki masa numarası otomatik alınır ve WhatsApp mesajına eklenir.
-    function sendOrder() {
-      const entries = [...state.cart.entries()];
+    updateTableDisplay();
+  }
 
-      if (entries.length === 0) {
-        alert("Lütfen önce sepetinize ürün ekleyin.");
-        return;
-      }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", connectOrderButton);
+  } else {
+    connectOrderButton();
+  }
 
-      const table = getTableNumber();
-
-      if (table === null) {
-        initializeTable();
-        alert("URL'de masa numarası bulunamadı. Masa numaralı QR kodunu kontrol edin.");
-        return;
-      }
-
-      state.table = table;
-      $("tableBadge").textContent = "🪑 Masa " + table;
-
-      const total = entries.reduce(
-        (sum, [, entry]) => sum + entry.product.price * entry.quantity,
-        0
-      );
-
-      const lines = [
-        "TARİHİ RUMELİ ÇORBACISI - SİPARİŞ",
-        "MASA NUMARASI: " + table,
-        "",
-        "SİPARİŞLER:"
-      ];
-
-      entries.forEach(([, entry]) => {
-        lines.push(
-          entry.product.name + " x " + entry.quantity +
-          " = " + money(entry.product.price * entry.quantity)
-        );
-      });
-
-      lines.push("", "TOPLAM: " + money(total));
-
-      const note = $("customerNote").value.trim();
-      if (note) lines.push("", "SİPARİŞ NOTU: " + note);
-
-      const message = lines.join("\n");
-
-      const whatsappURL =
-        "https://wa.me/" + WHATSAPP_NUMBER +
-        "?text=" + encodeURIComponent(message);
-
-      window.location.href = whatsappURL;
-    }
-
-    function initializePage() {
-      // Menü yüklenmesini beklemeden masa numarasını göster.
-      initializeTable();
-
-      $("search").addEventListener("input", renderMenu);
-      $("orderBtn").addEventListener("click", sendOrder);
-      $("retryBtn").addEventListener("click", loadMenu);
-
-      renderCart();
-      loadMenu();
-    }
-
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", initializePage);
-    } else {
-      initializePage();
-    }
-  </script>
-</body>
-</html> 
+  // İstersen mevcut HTML'deki butonun onclick özelliğinden de çağırabilirsin.
+  window.sendOrder = sendOrder;
+  window.getTableNumber = getTableNumber;
+})();
+</script>
