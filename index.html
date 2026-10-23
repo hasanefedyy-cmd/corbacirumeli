@@ -21,7 +21,6 @@
     }
 
     * { box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
 
     body {
@@ -415,7 +414,6 @@
   <script>
     "use strict";
 
-    // Önce çalışan API adresi denenir; diğeri yedek olarak kullanılır.
     const API_URLS = [
       "/api/menu",
       "/.netlify/functions/menu"
@@ -433,25 +431,26 @@
 
     const $ = (id) => document.getElementById(id);
 
-    // URL parametre adlarını büyük/küçük harf farkı olmadan kontrol eder.
     function readTableFromParams(params) {
       const acceptedNames = [
         "masa",
         "table",
         "masano",
         "masa_no",
-        "masano",
         "m"
       ];
 
       for (const [key, value] of params.entries()) {
         if (!acceptedNames.includes(key.toLowerCase())) continue;
-
         if (!/^\d{1,2}$/.test(value)) continue;
 
         const number = Number(value);
 
-        if (Number.isSafeInteger(number) && number >= 1 && number <= 30) {
+        if (
+          Number.isSafeInteger(number) &&
+          number >= 1 &&
+          number <= 30
+        ) {
           return number;
         }
       }
@@ -460,13 +459,8 @@
     }
 
     // Desteklenen bağlantılar:
-    // ?masa=5
-    // ?table=5
-    // ?masaNo=5
-    // /masa/5
-    // /masa5
-    // /table/5
-    // /table5
+    // ?masa=5, ?table=5, ?masaNo=5
+    // /masa/5, /masa5, /table/5, /table5
     // #masa=5
     function getTableNumber() {
       const fromQuery = readTableFromParams(
@@ -505,7 +499,11 @@
         if (match) {
           const number = Number(match[1]);
 
-          if (Number.isSafeInteger(number) && number >= 1 && number <= 30) {
+          if (
+            Number.isSafeInteger(number) &&
+            number >= 1 &&
+            number <= 30
+          ) {
             return number;
           }
         }
@@ -518,8 +516,8 @@
       state.table = getTableNumber();
 
       $("tableBadge").textContent = state.table !== null
-        ? "Masa " + state.table
-        : "Masa numarası okunamadı — QR bağlantısını kontrol edin";
+        ? "🪑 Masa " + state.table
+        : "Masa QR kodunu okutun";
     }
 
     function showStatus(message, isError = false, isSuccess = false) {
@@ -565,6 +563,7 @@
 
     async function fetchMenuFrom(url) {
       const controller = new AbortController();
+
       const timeoutId = setTimeout(
         () => controller.abort(),
         REQUEST_TIMEOUT_MS
@@ -579,11 +578,12 @@
         });
 
         if (!response.ok) {
-          throw new Error(url + " adresi HTTP " + response.status + " yanıtı verdi.");
+          throw new Error(
+            url + " adresi HTTP " + response.status + " yanıtı verdi."
+          );
         }
 
         const text = await response.text();
-
         let data;
 
         try {
@@ -653,7 +653,8 @@
           : (lastError ? lastError.message : "Bilinmeyen hata.");
 
         showStatus(
-          "Menü yüklenemedi. İnternet bağlantısını ve API adresini kontrol edin. " + detail,
+          "Menü yüklenemedi. İnternet bağlantısını ve API adresini kontrol edin. " +
+          detail,
           true
         );
         return;
@@ -745,7 +746,9 @@
       `).join("");
 
       $("menu").querySelectorAll("[data-add]").forEach((button) => {
-        button.addEventListener("click", () => addToCart(button.dataset.add));
+        button.addEventListener("click", () => {
+          addToCart(button.dataset.add);
+        });
       });
     }
 
@@ -814,7 +817,8 @@
       }
 
       const total = entries.reduce(
-        (sum, [, entry]) => sum + entry.product.price * entry.quantity,
+        (sum, [, entry]) =>
+          sum + entry.product.price * entry.quantity,
         0
       );
 
@@ -828,4 +832,9 @@
 
       $("cartItems").querySelectorAll("[data-plus]").forEach((button) => {
         button.addEventListener("click", () => {
-          changeQuanti
+          changeQuantity(button.dataset.plus, 1);
+        });
+      });
+    }
+
+    function se
