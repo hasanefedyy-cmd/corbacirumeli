@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#25120d">
-  <meta name="description" content="Tarihi Rumeli Çorbacısı dijital menüsü ve WhatsApp siparişi">
+  <meta name="description" content="Tarihi Rumeli Çorbacısı menüsü ve WhatsApp sipariş sayfası">
   <title>Tarihi Rumeli Çorbacısı | Menü</title>
 
   <style>
@@ -19,7 +20,13 @@
       --green: #286442;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       margin: 0;
@@ -76,15 +83,15 @@
     }
 
     .status.error {
-      color: var(--red);
+      color: #8b251d;
       background: #fff0ed;
       border-color: #e9bdb5;
     }
 
     .status.success {
-      color: #205b39;
+      color: #205c39;
       background: #edf8ef;
-      border-color: #b8dfc1;
+      border-color: #badcc1;
     }
 
     .toolbar {
@@ -94,13 +101,23 @@
       margin: 18px 0;
     }
 
-    input, select, button, textarea { font: inherit; }
-    input, select, textarea { color: var(--ink); }
-    button { cursor: pointer; }
+    input,
+    select,
+    button,
+    textarea {
+      font: inherit;
+    }
 
-    button:disabled {
-      opacity: .6;
-      cursor: not-allowed;
+    button {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
     }
 
     .search {
@@ -111,6 +128,7 @@
       border: 1px solid var(--line);
       border-radius: 10px;
       background: white;
+      color: var(--ink);
     }
 
     .categories {
@@ -119,6 +137,7 @@
       overflow-x: auto;
       padding: 3px 0 12px;
       margin-bottom: 10px;
+      scrollbar-width: thin;
     }
 
     .category-btn {
@@ -181,7 +200,6 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
       gap: 12px;
       margin-top: auto;
       padding-top: 13px;
@@ -194,7 +212,8 @@
       white-space: nowrap;
     }
 
-    .add-btn, .primary-btn {
+    .add-btn,
+    .primary-btn {
       border: 0;
       border-radius: 9px;
       padding: 11px 14px;
@@ -203,7 +222,8 @@
       font-weight: bold;
     }
 
-    .add-btn:active, .primary-btn:active {
+    .add-btn:active,
+    .primary-btn:active {
       transform: scale(.98);
     }
 
@@ -242,11 +262,12 @@
     }
 
     .quantity button {
-      width: 30px;
-      height: 30px;
+      width: 34px;
+      height: 34px;
       border: 1px solid var(--line);
       border-radius: 7px;
       background: var(--bg);
+      color: var(--ink);
     }
 
     .cart-total {
@@ -271,7 +292,8 @@
       padding: 13px;
       border: 1px solid var(--line);
       border-radius: 10px;
-      background: var(--card);
+      background: #fffdf9;
+      color: var(--ink);
       line-height: 1.5;
       resize: vertical;
     }
@@ -298,6 +320,11 @@
       font-weight: bold;
     }
 
+    .order-btn:disabled {
+      opacity: .65;
+      cursor: not-allowed;
+    }
+
     .empty {
       padding: 22px;
       border: 1px dashed var(--line);
@@ -308,105 +335,6 @@
       line-height: 1.5;
     }
 
-    .admin-footer {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 15px;
-    }
-
-    .admin-open-btn {
-      padding: 10px 15px;
-      border: 1px solid var(--line);
-      border-radius: 9px;
-      background: white;
-      color: var(--muted);
-    }
-
-    .admin-panel {
-      margin: 25px 0;
-      padding: 20px;
-      border: 2px solid var(--gold);
-      border-radius: 15px;
-      background: white;
-    }
-
-    .admin-panel h2, .admin-panel h3 {
-      font-family: Georgia, serif;
-    }
-
-    .admin-form {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .admin-form label {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    .admin-form input, .admin-form select {
-      width: 100%;
-      min-width: 0;
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fffdf9;
-    }
-
-    .admin-form .full { grid-column: 1 / -1; }
-
-    .admin-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 9px;
-      margin-top: 14px;
-    }
-
-    .secondary-btn, .danger-btn {
-      padding: 10px 13px;
-      border: 0;
-      border-radius: 8px;
-      color: white;
-      font-weight: bold;
-    }
-
-    .secondary-btn { background: #655348; }
-    .danger-btn { background: #a12424; }
-
-    .admin-product-list {
-      display: grid;
-      gap: 9px;
-      margin-top: 15px;
-    }
-
-    .admin-product-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 9px;
-    }
-
-    .admin-product-row > div:first-child {
-      min-width: 0;
-      overflow-wrap: anywhere;
-    }
-
-    .admin-product-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-    }
-
     footer {
       padding: 24px 12px;
       text-align: center;
@@ -414,15 +342,34 @@
       font-size: 13px;
     }
 
-    .hidden { display: none !important; }
+    .hidden {
+      display: none !important;
+    }
 
-    @media (max-width: 520px) {
-      main { width: calc(100% - 20px); }
-      .product { padding: 14px; }
-      .add-btn { padding: 10px; }
-      .admin-form { grid-template-columns: 1fr; }
-      .admin-form .full { grid-column: auto; }
-      .cart { padding: 14px; }
+    @media (max-width: 420px) {
+      main {
+        width: calc(100% - 20px);
+      }
+
+      .product {
+        padding: 14px;
+      }
+
+      .add-btn {
+        padding: 10px;
+      }
+
+      .cart {
+        padding: 14px;
+      }
+
+      .cart-row {
+        gap: 8px;
+      }
+
+      .quantity {
+        gap: 5px;
+      }
     }
   </style>
 </head>
@@ -431,7 +378,9 @@
   <header>
     <h1 class="brand">Tarihi Rumeli Çorbacısı</h1>
     <p class="subtitle">Lezzetin gelenekle buluştuğu yer</p>
-    <div id="tableBadge" class="table-badge">Masa numarası kontrol ediliyor...</div>
+    <div id="tableBadge" class="table-badge">
+      Masa numarası okunuyor...
+    </div>
   </header>
 
   <main>
@@ -440,17 +389,28 @@
     </div>
 
     <div class="toolbar">
-      <input id="search" class="search" type="search"
-        placeholder="Menüde ara..." aria-label="Menüde ara">
+      <input
+        id="search"
+        class="search"
+        type="search"
+        placeholder="Menüde ara..."
+        aria-label="Menüde ara"
+        autocomplete="off"
+      >
     </div>
 
-    <nav id="categories" class="categories" aria-label="Menü kategorileri"></nav>
+    <nav
+      id="categories"
+      class="categories"
+      aria-label="Menü kategorileri"
+    ></nav>
 
     <h2 class="section-title">Menümüz</h2>
     <div id="menu" class="menu-grid"></div>
 
     <section class="cart" aria-label="Sipariş sepeti">
       <h2>Sipariş sepetim</h2>
+
       <div id="cartItems"></div>
 
       <div class="cart-total">
@@ -458,118 +418,130 @@
         <span id="cartTotal">0,00 TL</span>
       </div>
 
-      <label class="customer-note-label" for="customerNote">Sipariş notunuz</label>
-      <textarea id="customerNote" class="customer-note" maxlength="500"
+      <label class="customer-note-label" for="customerNote">
+        Sipariş notunuz
+      </label>
+
+      <textarea
+        id="customerNote"
+        class="customer-note"
+        maxlength="500"
         placeholder="Örn. Acısız olsun, ekmek ekleyin, soğan olmasın..."
-        aria-describedby="noteHelp"></textarea>
+        aria-describedby="noteHelp"
+      ></textarea>
 
       <p id="noteHelp" class="note-help">
-        Sipariş notunuz WhatsApp mesajına eklenecektir.
+        Buraya yazdığınız not WhatsApp sipariş mesajınıza eklenecektir.
       </p>
 
       <button id="orderBtn" class="order-btn" type="button">
         WhatsApp ile sipariş ver
       </button>
 
-      <p class="note-help">
+      <p class="subtitle" style="color:var(--muted)">
         Siparişinizi göndermeden önce WhatsApp ekranında kontrol edebilirsiniz.
       </p>
-    </section>
-
-    <section id="adminPanel" class="admin-panel hidden">
-      <h2>Yönetici paneli</h2>
-      <p>Menü ürünlerini buradan ekleyebilir, düzenleyebilir veya silebilirsin.</p>
-
-      <div id="adminStatus" class="status hidden" role="status" aria-live="polite"></div>
-
-      <div id="loginArea">
-        <form id="loginForm">
-          <label for="adminPassword">Yönetici şifresi</label>
-          <input id="adminPassword" type="password" autocomplete="current-password"
-            required class="search" placeholder="Yönetici şifrenizi girin">
-          <button class="primary-btn" type="submit">Giriş yap</button>
-        </form>
-      </div>
-
-      <div id="adminArea" class="hidden">
-        <form id="adminForm" class="admin-form">
-          <input id="editId" type="hidden">
-
-          <label>
-            Ürün adı
-            <input id="productName" type="text" maxlength="150"
-              required placeholder="Örn. Mercimek Çorbası">
-          </label>
-
-          <label>
-            Kategori
-            <input id="productCategory" type="text" maxlength="100"
-              required list="categorySuggestions" placeholder="Örn. Çorbalar">
-            <datalist id="categorySuggestions">
-              <option value="Çorbalar"></option>
-              <option value="Pideler"></option>
-              <option value="Izgaralar"></option>
-              <option value="İçecekler"></option>
-              <option value="Tatlılar"></option>
-            </datalist>
-          </label>
-
-          <label class="full">
-            Fiyat (TL)
-            <input id="productPrice" type="number" min="0" max="1000000"
-              step="0.01" required placeholder="150">
-          </label>
-
-          <div class="admin-actions full">
-            <button id="saveProductBtn" class="primary-btn" type="submit">
-              Ürün ekle
-            </button>
-            <button id="cancelEditBtn" class="secondary-btn hidden" type="button">
-              Düzenlemeyi iptal et
-            </button>
-            <button id="refreshAdminBtn" class="secondary-btn" type="button">
-              Menüyü yenile
-            </button>
-          </div>
-        </form>
-
-        <h3>Mevcut ürünler</h3>
-        <div id="adminProductList" class="admin-product-list"></div>
-
-        <div class="admin-actions">
-          <button id="logoutBtn" class="danger-btn" type="button">Çıkış yap</button>
-        </div>
-      </div>
     </section>
   </main>
 
   <footer>
     Tarihi Rumeli Çorbacısı · Afiyet olsun!
-    <div class="admin-footer">
-      <button id="openAdminBtn" class="admin-open-btn" type="button">
-        Yönetici girişi
-      </button>
-    </div>
   </footer>
 
   <script>
     "use strict";
 
-    // Netlify Functions varsayılan adresi:
-    const API_URL = "/.netlify/functions/menu";
+    // Menü API adresleri sırayla denenir.
+    // İkinci adresin çalışması, Netlify'da bu fonksiyonun mevcut olmasına bağlıdır.
+    const API_URLS = [
+      "/api/menu",
+      "/.netlify/functions/menu"
+    ];
+
+    // Restoranın WhatsApp numarası.
+    // Ülke koduyla yazılmalı; +, boşluk veya tire kullanılmamalıdır.
     const WHATSAPP_NUMBER = "905404721414";
 
     const state = {
       products: [],
       category: "Tümü",
       cart: new Map(),
-      table: null,
-      adminPassword: null,
-      editingId: null
+      table: null
     };
 
     const $ = (id) => document.getElementById(id);
 
+    // Masa numarasını URL'den bulur.
+    // Desteklenen biçimler:
+    // ?masa=5
+    // ?table=5
+    // /masa/5
+    // /masa5
+    function getTableNumber() {
+      const params = new URLSearchParams(window.location.search);
+
+      const queryValue = params.get("masa") || params.get("table");
+
+      if (queryValue && /^\d+$/.test(queryValue)) {
+        const number = Number(queryValue);
+
+        if (
+          Number.isSafeInteger(number) &&
+          number >= 1 &&
+          number <= 30
+        ) {
+          return number;
+        }
+      }
+
+      const path = window.location.pathname;
+
+      const match =
+        path.match(/^\/masa\/?(\d+)\/?$/i) ||
+        path.match(/^\/masa(\d+)\/?$/i);
+
+      if (match) {
+        const number = Number(match[1]);
+
+        if (
+          Number.isSafeInteger(number) &&
+          number >= 1 &&
+          number <= 30
+        ) {
+          return number;
+        }
+      }
+
+      return null;
+    }
+
+    function showStatus(message, isError = false, isSuccess = false) {
+      const box = $("status");
+
+      box.textContent = message;
+      box.classList.toggle("error", isError);
+      box.classList.toggle("success", isSuccess);
+      box.classList.remove("hidden");
+    }
+
+    function hideStatus() {
+      $("status").classList.add("hidden");
+    }
+
+    function money(value) {
+      const amount = Number(value);
+
+      if (!Number.isFinite(amount)) {
+        return "0,00 TL";
+      }
+
+      return amount.toLocaleString("tr-TR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }) + " TL";
+    }
+
+    // HTML'e basılan metinleri güvenli hâle getirir.
     function escapeText(value) {
       return String(value ?? "").replace(/[&<>"']/g, (char) => ({
         "&": "&amp;",
@@ -580,225 +552,336 @@
       })[char]);
     }
 
-    function money(value) {
-      const number = Number(value);
-      return (Number.isFinite(number) ? number : 0).toLocaleString("tr-TR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }) + " TL";
-    }
-
-    function getTableNumber() {
-      const params = new URLSearchParams(window.location.search);
-      const value = params.get("masa") || params.get("table");
-
-      if (value && /^\d+$/.test(value)) {
-        const number = Number(value);
-        if (Number.isSafeInteger(number) && number >= 1 && number <= 30) {
-          return number;
-        }
-      }
-
-      const match = window.location.pathname.match(/^\/masa\/?(\d+)\/?$/i);
-      if (match) {
-        const number = Number(match[1]);
-        if (Number.isSafeInteger(number) && number >= 1 && number <= 30) {
-          return number;
-        }
-      }
-
-      return null;
-    }
-
-    function renderTableBadge() {
-      state.table = getTableNumber();
-
-      if (state.table !== null) {
-        $("tableBadge").textContent = "Masa " + state.table;
-      } else {
-        $("tableBadge").textContent = "Tarihi Rumeli Çorbacısı";
-      }
-    }
-
-    function showStatus(message, type = "") {
-      const box = $("status");
-      box.textContent = message;
-      box.className = "status" + (type ? " " + type : "");
-    }
-
-    function hideStatus() {
-      $("status").classList.add("hidden");
-    }
-
-    function showAdminStatus(message, isError = false) {
-      const box = $("adminStatus");
-      box.textContent = message;
-      box.className = "status " + (isError ? "error" : "success");
-    }
-
     function normalizeProducts(data) {
-      if (Array.isArray(data)) return data;
-      if (data && Array.isArray(data.products)) return data.products;
-      if (data && Array.isArray(data.menu)) return data.menu;
-      if (data && Array.isArray(data.data)) return data.data;
+      if (Array.isArray(data)) {
+        return data;
+      }
+
+      if (data && Array.isArray(data.products)) {
+        return data.products;
+      }
+
+      if (data && Array.isArray(data.menu)) {
+        return data.menu;
+      }
+
+      if (data && Array.isArray(data.data)) {
+        return data.data;
+      }
+
       return null;
     }
 
-    async function apiRequest(url, options = {}, isAdmin = false) {
-      const headers = {
-        Accept: "application/json",
-        ...(options.body ? { "Content-Type": "application/json" } : {}),
-        ...(options.headers || {})
-      };
-
-      if (isAdmin) {
-        if (!state.adminPassword) {
-          throw new Error("Yönetici oturumu kapalı. Yeniden giriş yap.");
-        }
-        headers["x-admin-password"] = state.adminPassword;
-      }
-
-      const response = await fetch(url, {
-        ...options,
-        headers,
-        cache: "no-store"
-      });
-
-      const text = await response.text();
-      let data;
-
-      try {
-        data = text ? JSON.parse(text) : null;
-      } catch {
-        throw new Error(
-          "Sunucu JSON yerine farklı bir yanıt verdi. Function adresini ve Netlify dağıtımını kontrol edin."
-        );
-      }
-
-      if (!response.ok) {
-        throw new Error(
-          (data && (data.error || data.message)) ||
-          "Sunucu isteği başarısız: HTTP " + response.status
-        );
-      }
-
-      return data;
-    }
-
+    // Bir API adresi başarısız olursa diğer adres denenir.
     async function loadMenu() {
       showStatus("Menü yükleniyor...");
 
-      try {
-        const data = await apiRequest(API_URL);
-        const list = normalizeProducts(data);
+      let lastError = null;
 
-        if (!list) {
-          throw new Error("Sunucudan geçerli bir ürün listesi alınamadı.");
+      for (const url of API_URLS) {
+        try {
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+              "Accept": "application/json"
+            },
+            cache: "no-store"
+          });
+
+          if (!response.ok) {
+            throw new Error(
+              url + " adresi HTTP " + response.status + " yanıtı verdi."
+            );
+          }
+
+          const data = await response.json();
+          const products = normalizeProducts(data);
+
+          if (!products) {
+            throw new Error(
+              url + " adresinden geçerli bir ürün listesi alınamadı."
+            );
+          }
+
+          state.products = products
+            .filter((item) =>
+              item &&
+              item.id !== undefined &&
+              item.id !== null &&
+              typeof item.name === "string" &&
+              item.name.trim() !== "" &&
+              item.price !== null &&
+              item.price !== undefined &&
+              String(item.price).trim() !== "" &&
+              Number.isFinite(Number(item.price)) &&
+              Number(item.price) >= 0
+            )
+            .map((item) => ({
+              id: String(item.id),
+              name: item.name.trim(),
+              category: String(item.category || "Diğer").trim() || "Diğer",
+              price: Number(item.price)
+            }));
+
+          renderCategories();
+          renderMenu();
+
+          if (state.products.length === 0) {
+            showStatus(
+              "Menü servisine ulaşıldı ancak gösterilebilecek ürün bulunamadı."
+            );
+          } else {
+            hideStatus();
+          }
+
+          return;
+        } catch (error) {
+          lastError = error;
+          console.error("Menü adresi başarısız:", url, error);
         }
-
-        state.products = list
-          .filter((item) =>
-            item &&
-            item.id !== undefined &&
-            item.name !== undefined &&
-            Number.isFinite(Number(item.price))
-          )
-          .map((item) => ({
-            id: String(item.id),
-            name: String(item.name),
-            category: String(item.category || "Diğer"),
-            price: Number(item.price),
-            description: String(item.description || ""),
-            available: item.available !== false && item.is_available !== false
-          }));
-
-        renderCategories();
-        renderMenu();
-        renderCart();
-
-        if (state.products.length === 0) {
-          showStatus("API yanıt verdi ancak menüde ürün bulunamadı.");
-        } else {
-          hideStatus();
-        }
-
-        if (state.adminPassword) renderAdminProducts();
-      } catch (error) {
-        console.error("Menü yükleme hatası:", error);
-        $("categories").innerHTML = "";
-        $("menu").innerHTML = "";
-        showStatus("Menü yüklenemedi: " + error.message, "error");
       }
+
+      state.products = [];
+      renderCategories();
+      renderMenu();
+
+      showStatus(
+        "Menü yüklenemedi. API adreslerini ve Netlify menü fonksiyonunu kontrol edin. Ayrıntı: " +
+        (lastError ? lastError.message : "Bilinmeyen hata"),
+        true
+      );
     }
 
     function renderCategories() {
-      const categories = [
-        "Tümü",
-        ...new Set(state.products.map((item) => item.category))
+      const categoryNames = [
+        ...new Set(
+          state.products.map((item) => item.category)
+        )
       ];
 
-      if (!categories.includes(state.category)) state.category = "Tümü";
+      const names = ["Tümü", ...categoryNames];
 
-      $("categories").innerHTML = categories.map((category) => `
-        <button type="button"
-          class="category-btn ${state.category === category ? "active" : ""}"
-          data-category="${escapeText(category)}">
-          ${escapeText(category)}
-        </button>
+      if (!names.includes(state.category)) {
+        state.category = "Tümü";
+      }
+
+      $("categories").innerHTML = names.map((name) => `
+        <button
+          type="button"
+          class="category-btn ${state.category === name ? "active" : ""}"
+          data-category="${escapeText(name)}"
+          aria-pressed="${state.category === name ? "true" : "false"}"
+        >${escapeText(name)}</button>
       `).join("");
+
+      $("categories").querySelectorAll("[data-category]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.category = button.dataset.category;
+
+          renderCategories();
+          renderMenu();
+        });
+      });
     }
 
     function renderMenu() {
-      const query = $("search").value.trim().toLocaleLowerCase("tr-TR");
+      const query = $("search").value
+        .trim()
+        .toLocaleLowerCase("tr-TR");
 
       const filtered = state.products.filter((item) => {
-        const matchesCategory =
-          state.category === "Tümü" || item.category === state.category;
+        const categoryMatches =
+          state.category === "Tümü" ||
+          item.category === state.category;
 
-        const searchable = (
-          item.name + " " + item.category + " " + item.description
+        const searchableText = (
+          item.name + " " + item.category
         ).toLocaleLowerCase("tr-TR");
 
-        return matchesCategory && searchable.includes(query);
+        const searchMatches = searchableText.includes(query);
+
+        return categoryMatches && searchMatches;
       });
 
-      if (!filtered.length) {
-        $("menu").innerHTML =
-          '<div class="empty">Aramanıza uygun ürün bulunamadı.</div>';
+      if (filtered.length === 0) {
+        $("menu").innerHTML = `
+          <div class="empty">
+            ${
+              state.products.length === 0
+                ? "Menü ürünleri henüz yüklenemedi."
+                : "Aramanıza uygun ürün bulunamadı."
+            }
+          </div>
+        `;
         return;
       }
 
       $("menu").innerHTML = filtered.map((item) => `
         <article class="product">
-          <span class="product-category">${escapeText(item.category)}</span>
+          <span class="product-category">
+            ${escapeText(item.category)}
+          </span>
+
           <h3>${escapeText(item.name)}</h3>
-          ${item.description
-            ? `<p>${escapeText(item.description)}</p>`
-            : ""}
+
           <div class="product-bottom">
             <span class="price">${money(item.price)}</span>
-            <button type="button" class="add-btn"
+
+            <button
+              type="button"
+              class="add-btn"
               data-add="${escapeText(item.id)}"
-              ${item.available ? "" : "disabled"}>
-              ${item.available ? "Sepete ekle" : "Stokta yok"}
-            </button>
+              aria-label="${escapeText(item.name)} ürününü sepete ekle"
+            >Sepete ekle</button>
           </div>
         </article>
       `).join("");
+
+      $("menu").querySelectorAll("[data-add]").forEach((button) => {
+        button.addEventListener("click", () => {
+          addToCart(button.dataset.add);
+        });
+      });
     }
 
     function addToCart(id) {
-      const product = state.products.find((item) => item.id === id);
-      if (!product || !product.available) return;
+      const product = state.products.find(
+        (item) => item.id === id
+      );
+
+      if (!product) {
+        return;
+      }
 
       const existing = state.cart.get(id);
+
       state.cart.set(id, {
         product,
         quantity: existing ? existing.quantity + 1 : 1
       });
 
       renderCart();
+
+      showStatus(
+        product.name + " sepete eklendi.",
+        false,
+        true
+      );
     }
 
     function changeQuantity(id, amount) {
-      
+      const entry = state.cart.get(id);
+
+      if (!entry) {
+        return;
+      }
+
+      entry.quantity += amount;
+
+      if (entry.quantity <= 0) {
+        state.cart.delete(id);
+      } else {
+        state.cart.set(id, entry);
+      }
+
+      renderCart();
+    }
+
+    function renderCart() {
+      const entries = [...state.cart.entries()];
+
+      if (entries.length === 0) {
+        $("cartItems").innerHTML = `
+          <div class="empty">Sepetiniz henüz boş.</div>
+        `;
+      } else {
+        $("cartItems").innerHTML = entries.map(([id, entry]) => `
+          <div class="cart-row">
+            <div>
+              <strong>${escapeText(entry.product.name)}</strong><br>
+              <small>
+                ${money(entry.product.price * entry.quantity)}
+              </small>
+            </div>
+
+            <div class="quantity">
+              <button
+                type="button"
+                aria-label="${escapeText(entry.product.name)} miktarını azalt"
+                data-minus="${escapeText(id)}"
+              >−</button>
+
+              <span aria-label="Adet">${entry.quantity}</span>
+
+              <button
+                type="button"
+                aria-label="${escapeText(entry.product.name)} miktarını artır"
+                data-plus="${escapeText(id)}"
+              >+</button>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      const total = entries.reduce(
+        (sum, [, entry]) =>
+          sum + entry.product.price * entry.quantity,
+        0
+      );
+
+      $("cartTotal").textContent = money(total);
+
+      $("cartItems").querySelectorAll("[data-minus]").forEach((button) => {
+        button.addEventListener("click", () => {
+          changeQuantity(button.dataset.minus, -1);
+        });
+      });
+
+      $("cartItems").querySelectorAll("[data-plus]").forEach((button) => {
+        button.addEventListener("click", () => {
+          changeQuantity(button.dataset.plus, 1);
+        });
+      });
+    }
+
+    function sendOrder() {
+      const entries = [...state.cart.values()];
+
+      if (entries.length === 0) {
+        alert("Lütfen önce sepetinize ürün ekleyin.");
+        return;
+      }
+
+      if (!state.table) {
+        alert(
+          "Masa numarası bağlantıdan okunamadı. Masanıza ait QR kodu tekrar tarayın."
+        );
+        return;
+      }
+
+      if (!/^\d{10,15}$/.test(WHATSAPP_NUMBER)) {
+        alert(
+          "WhatsApp numarası geçersiz. index.html içindeki WHATSAPP_NUMBER değerini kontrol edin."
+        );
+        return;
+      }
+
+      const total = entries.reduce(
+        (sum, entry) =>
+          sum + entry.product.price * entry.quantity,
+        0
+      );
+
+      const customerNote = $("customerNote").value.trim();
+
+      const lines = [
+        "Tarihi Rumeli Çorbacısı - Sipariş",
+        "Masa: " + state.table,
+        "",
+        ...entries.map((entry) =>
+          entry.product.name +
+          " x " +
+          entry.quantity +
+          " = " +
+          money(entry.product.price * entry.quantity)
+        ),
