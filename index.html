@@ -1,11 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#25120d">
+  <meta name="description" content="Tarihi Rumeli Çorbacısı dijital menüsü ve WhatsApp siparişi">
   <title>Tarihi Rumeli Çorbacısı | Menü</title>
+
   <style>
     :root {
       --bg: #faf6ef;
@@ -52,7 +53,7 @@
       display: inline-block;
       margin-top: 17px;
       padding: 9px 16px;
-      border: 1px solid #d8ad62;
+      border: 1px solid var(--gold);
       border-radius: 25px;
       color: #fff8eb;
       font-weight: bold;
@@ -74,9 +75,15 @@
     }
 
     .status.error {
-      color: #8b251d;
+      color: var(--red);
       background: #fff0ed;
       border-color: #e9bdb5;
+    }
+
+    .status.success {
+      color: #205b39;
+      background: #edf8ef;
+      border-color: #b8dfc1;
     }
 
     .toolbar {
@@ -90,6 +97,10 @@
       font: inherit;
     }
 
+    input, select, textarea {
+      color: var(--ink);
+    }
+
     .search {
       flex: 1 1 200px;
       width: 100%;
@@ -98,7 +109,6 @@
       border: 1px solid var(--line);
       border-radius: 10px;
       background: white;
-      color: var(--ink);
     }
 
     .categories {
@@ -133,7 +143,10 @@
 
     .menu-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 245px), 1fr));
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(min(100%, 245px), 1fr)
+      );
       gap: 13px;
     }
 
@@ -167,6 +180,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
       gap: 12px;
       margin-top: auto;
       padding-top: 13px;
@@ -258,8 +272,7 @@
       padding: 13px;
       border: 1px solid var(--line);
       border-radius: 10px;
-      background: #fffdf9;
-      color: var(--ink);
+      background: var(--card);
       line-height: 1.5;
       resize: vertical;
     }
@@ -295,6 +308,107 @@
       background: white;
     }
 
+    .admin-footer {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .admin-open-btn, .logout-btn {
+      padding: 10px 15px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: white;
+      color: var(--muted);
+    }
+
+    .admin-panel {
+      margin: 25px 0;
+      padding: 20px;
+      border: 2px solid var(--gold);
+      border-radius: 15px;
+      background: white;
+    }
+
+    .admin-panel h2, .admin-panel h3 {
+      font-family: Georgia, serif;
+    }
+
+    .admin-form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .admin-form label {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .admin-form input, .admin-form select {
+      width: 100%;
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf9;
+    }
+
+    .admin-form .full {
+      grid-column: 1 / -1;
+    }
+
+    .admin-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .secondary-btn, .danger-btn {
+      padding: 10px 13px;
+      border: 0;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .secondary-btn { background: #655348; }
+    .danger-btn { background: #a12424; }
+
+    .admin-product-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 15px;
+    }
+
+    .admin-product-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+    }
+
+    .admin-product-row > div:first-child {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .admin-product-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
     footer {
       padding: 24px 12px;
       text-align: center;
@@ -304,18 +418,23 @@
 
     .hidden { display: none !important; }
 
-    @media (max-width: 420px) {
+    @media (max-width: 520px) {
       main { width: calc(100% - 20px); }
       .product { padding: 14px; }
       .add-btn { padding: 10px; }
+      .admin-form { grid-template-columns: 1fr; }
+      .admin-form .full { grid-column: auto; }
     }
   </style>
 </head>
+
 <body>
   <header>
     <h1 class="brand">Tarihi Rumeli Çorbacısı</h1>
     <p class="subtitle">Lezzetin gelenekle buluştuğu yer</p>
-    <div id="tableBadge" class="table-badge">Masa numarası okunuyor...</div>
+    <div id="tableBadge" class="table-badge">
+      Masa numarası okunuyor...
+    </div>
   </header>
 
   <main>
@@ -333,7 +452,8 @@
       >
     </div>
 
-    <nav id="categories" class="categories" aria-label="Menü kategorileri"></nav>
+    <nav id="categories" class="categories"
+      aria-label="Menü kategorileri"></nav>
 
     <h2 class="section-title">Menümüz</h2>
     <div id="menu" class="menu-grid"></div>
@@ -347,7 +467,6 @@
         <span id="cartTotal">0,00 TL</span>
       </div>
 
-      <!-- MÜŞTERİ NOTU ALANI -->
       <label class="customer-note-label" for="customerNote">
         Sipariş notunuz
       </label>
@@ -372,71 +491,116 @@
         Siparişinizi göndermeden önce WhatsApp ekranında kontrol edebilirsiniz.
       </p>
     </section>
+
+    <!-- YÖNETİCİ PANELİ -->
+    <section id="adminPanel" class="admin-panel hidden">
+      <h2>Yönetici paneli</h2>
+      <p>Menü ürünlerini buradan ekleyebilir, düzenleyebilir veya silebilirsin.</p>
+
+      <div id="adminStatus" class="status hidden"
+        role="status" aria-live="polite"></div>
+
+      <form id="adminForm" class="admin-form">
+        <input id="editId" type="hidden">
+
+        <label>
+          Ürün adı
+          <input id="productName" type="text"
+            maxlength="150" required placeholder="Örn. Mercimek Çorbası">
+        </label>
+
+        <label>
+          Kategori
+          <input id="productCategory" type="text"
+            maxlength="100" required list="categorySuggestions"
+            placeholder="Örn. Çorbalar">
+          <datalist id="categorySuggestions">
+            <option value="Çorbalar"></option>
+            <option value="Pideler"></option>
+            <option value="Izgaralar"></option>
+            <option value="İçecekler"></option>
+            <option value="Tatlılar"></option>
+          </datalist>
+        </label>
+
+        <label class="full">
+          Fiyat (TL)
+          <input id="productPrice" type="number"
+            min="0" max="1000000" step="0.01" required
+            placeholder="150">
+        </label>
+
+        <div class="admin-actions full">
+          <button id="saveProductBtn" class="primary-btn" type="submit">
+            Ürün ekle
+          </button>
+          <button id="cancelEditBtn" class="secondary-btn hidden"
+            type="button">Düzenlemeyi iptal et</button>
+          <button id="refreshAdminBtn" class="secondary-btn" type="button">
+            Menüyü yenile
+          </button>
+        </div>
+      </form>
+
+      <h3>Mevcut ürünler</h3>
+      <div id="adminProductList" class="admin-product-list"></div>
+
+      <div class="admin-actions">
+        <button id="logoutBtn" class="danger-btn" type="button">
+          Yönetici oturumunu kapat
+        </button>
+      </div>
+    </section>
   </main>
 
   <footer>
     Tarihi Rumeli Çorbacısı · Afiyet olsun!
+    <div class="admin-footer">
+      <button id="openAdminBtn" class="admin-open-btn" type="button">
+        Yönetici girişi
+      </button>
+    </div>
   </footer>
 
   <script>
     "use strict";
 
     const API_URL = "/api/menu";
-
-    // Restoranın WhatsApp numarası.
-    // Numara ülke koduyla yazılmalıdır; +, boşluk veya tire kullanmayın.
     const WHATSAPP_NUMBER = "905404721414";
+    const SESSION_KEY = "rumeli_admin_password";
 
     const state = {
       products: [],
       category: "Tümü",
       cart: new Map(),
-      table: null
+      table: null,
+      adminPassword: null,
+      editingId: null,
+      loading: false
     };
 
     const $ = (id) => document.getElementById(id);
 
     function getTableNumber() {
-      // /masa1, /masa12 ve /masa/12 biçimlerini destekler.
       const path = window.location.pathname;
       const match = path.match(/^\/masa\/?(\d+)\/?$/i);
 
       if (match) {
         const number = Number(match[1]);
         return Number.isSafeInteger(number) && number > 0
-          ? number
-          : null;
+          ? number : null;
       }
 
-      const query = new URLSearchParams(window.location.search);
-      const queryValue = query.get("masa");
+      const params = new URLSearchParams(window.location.search);
+      const value = params.get("masa") || params.get("table");
 
-      if (queryValue && /^\d+$/.test(queryValue)) {
-        const number = Number(queryValue);
+      if (value && /^\d+$/.test(value)) {
+        const number = Number(value);
         return Number.isSafeInteger(number) && number > 0
-          ? number
-          : null;
+          ? number : null;
       }
 
       return null;
-    }
-
-    function showStatus(message, isError = false) {
-      const box = $("status");
-      box.textContent = message;
-      box.classList.toggle("error", isError);
-      box.classList.remove("hidden");
-    }
-
-    function hideStatus() {
-      $("status").classList.add("hidden");
-    }
-
-    function money(value) {
-      return Number(value).toLocaleString("tr-TR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }) + " TL";
     }
 
     function escapeText(value) {
@@ -449,9 +613,33 @@
       })[char]);
     }
 
+    function money(value) {
+      return Number(value).toLocaleString("tr-TR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }) + " TL";
+    }
+
+    function showStatus(message, isError = false) {
+      const box = $("status");
+      box.textContent = message;
+      box.classList.remove("hidden", "error", "success");
+
+      if (isError) box.classList.add("error");
+    }
+
+    function hideStatus() {
+      $("status").classList.add("hidden");
+    }
+
+    function showAdminStatus(message, isError = false) {
+      const box = $("adminStatus");
+      box.textContent = message;
+      box.classList.remove("hidden", "error", "success");
+      box.classList.add(isError ? "error" : "success");
+    }
+
     function normalizeProducts(data) {
-      // API normalde doğrudan bir dizi döndürüyor.
-      // Alternatif JSON yanıt biçimlerini de destekler.
       if (Array.isArray(data)) return data;
       if (data && Array.isArray(data.products)) return data.products;
       if (data && Array.isArray(data.menu)) return data.menu;
@@ -459,27 +647,58 @@
       return null;
     }
 
+    async function apiRequest(url, options = {}, admin = false) {
+      const headers = {
+        Accept: "application/json",
+        ...(options.body ? { "Content-Type": "application/json" } : {}),
+        ...(options.headers || {})
+      };
+
+      if (admin) {
+        if (!state.adminPassword) {
+          throw new Error("Yönetici oturumu kapalı. Yeniden giriş yap.");
+        }
+        headers["x-admin-password"] = state.adminPassword;
+      }
+
+      const response = await fetch(url, {
+        ...options,
+        headers,
+        cache: "no-store"
+      });
+
+      const text = await response.text();
+      let data = null;
+
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch {
+        data = { error: text || "Sunucudan geçersiz yanıt geldi." };
+      }
+
+      if (!response.ok) {
+        if (response.status === 401 && admin) {
+          logout(false);
+        }
+
+        throw new Error(
+          data?.error || data?.message ||
+          "İstek başarısız oldu (HTTP " + response.status + ")."
+        );
+      }
+
+      return data;
+    }
+
     async function loadMenu() {
       showStatus("Menü yükleniyor...");
 
       try {
-        const response = await fetch(API_URL, {
-          method: "GET",
-          headers: { "Accept": "application/json" },
-          cache: "no-store"
-        });
-
-        if (!response.ok) {
-          throw new Error(
-            "Menü servisi HTTP " + response.status + " yanıtı verdi."
-          );
-        }
-
-        const data = await response.json();
+        const data = await apiRequest(API_URL);
         const products = normalizeProducts(data);
 
         if (!products) {
-          throw new Error("Sunucudan beklenen ürün listesi alınamadı.");
+          throw new Error("Sunucudan geçerli ürün listesi alınamadı.");
         }
 
         state.products = products
@@ -496,24 +715,21 @@
             price: Number(item.price)
           }));
 
-        if (state.products.length === 0) {
-          showStatus("Menüde şu anda gösterilecek ürün bulunamadı.");
-          renderCategories();
-          renderMenu();
-          return;
-        }
-
-        hideStatus();
         renderCategories();
         renderMenu();
+        renderCart();
+        hideStatus();
+
+        if (!state.products.length) {
+          showStatus("Menüde henüz ürün bulunmuyor.");
+        }
+
+        if (state.adminPassword) {
+          renderAdminProducts();
+        }
       } catch (error) {
         console.error("Menü yükleme hatası:", error);
-
-        showStatus(
-          "Menü yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin. Hata: " +
-          error.message,
-          true
-        );
+        showStatus("Menü yüklenemedi: " + error.message, true);
       }
     }
 
@@ -523,19 +739,17 @@
         ...new Set(state.products.map((item) => item.category))
       ];
 
-      if (!names.includes(state.category)) {
-        state.category = "Tümü";
-      }
+      if (!names.includes(state.category)) state.category = "Tümü";
 
       $("categories").innerHTML = names.map((name) => `
-        <button
-          type="button"
+        <button type="button"
           class="category-btn ${state.category === name ? "active" : ""}"
-          data-category="${escapeText(name)}"
-        >${escapeText(name)}</button>
+          data-category="${escapeText(name)}">
+          ${escapeText(name)}
+        </button>
       `).join("");
 
-      $("categories").querySelectorAll("button").forEach((button) => {
+      $("categories").querySelectorAll("[data-category]").forEach((button) => {
         button.addEventListener("click", () => {
           state.category = button.dataset.category;
           renderCategories();
@@ -545,9 +759,7 @@
     }
 
     function renderMenu() {
-      const query = $("search").value
-        .trim()
-        .toLocaleLowerCase("tr-TR");
+      const query = $("search").value.trim().toLocaleLowerCase("tr-TR");
 
       const filtered = state.products.filter((item) => {
         const categoryMatches =
@@ -555,13 +767,12 @@
 
         const searchMatches =
           (item.name + " " + item.category)
-            .toLocaleLowerCase("tr-TR")
-            .includes(query);
+            .toLocaleLowerCase("tr-TR").includes(query);
 
         return categoryMatches && searchMatches;
       });
 
-      if (filtered.length === 0) {
+      if (!filtered.length) {
         $("menu").innerHTML =
           '<div class="empty">Aramanıza uygun ürün bulunamadı.</div>';
         return;
@@ -573,19 +784,14 @@
           <h3>${escapeText(item.name)}</h3>
           <div class="product-bottom">
             <span class="price">${money(item.price)}</span>
-            <button
-              type="button"
-              class="add-btn"
-              data-add="${escapeText(item.id)}"
-            >Sepete ekle</button>
+            <button type="button" class="add-btn"
+              data-add="${escapeText(item.id)}">Sepete ekle</button>
           </div>
         </article>
       `).join("");
 
       $("menu").querySelectorAll("[data-add]").forEach((button) => {
-        button.addEventListener("click", () =>
-          addToCart(button.dataset.add)
-        );
+        button.addEventListener("click", () => addToCart(button.dataset.add));
       });
     }
 
@@ -594,7 +800,6 @@
       if (!product) return;
 
       const existing = state.cart.get(id);
-
       state.cart.set(id, {
         product,
         quantity: existing ? existing.quantity + 1 : 1
@@ -609,11 +814,8 @@
 
       entry.quantity += amount;
 
-      if (entry.quantity <= 0) {
-        state.cart.delete(id);
-      } else {
-        state.cart.set(id, entry);
-      }
+      if (entry.quantity <= 0) state.cart.delete(id);
+      else state.cart.set(id, entry);
 
       renderCart();
     }
@@ -621,124 +823,13 @@
     function renderCart() {
       const entries = [...state.cart.entries()];
 
-      if (entries.length === 0) {
-        $("cartItems").innerHTML =
-          '<div class="empty">Sepetiniz henüz boş.</div>';
-      } else {
-        $("cartItems").innerHTML = entries.map(([id, entry]) => `
+      $("cartItems").innerHTML = entries.length
+        ? entries.map(([id, entry]) => `
           <div class="cart-row">
             <div>
               <strong>${escapeText(entry.product.name)}</strong><br>
               <small>${money(entry.product.price * entry.quantity)}</small>
             </div>
             <div class="quantity">
-              <button
-                type="button"
-                aria-label="Bir azalt"
-                data-minus="${escapeText(id)}"
-              >−</button>
-              <span>${entry.quantity}</span>
-              <button
-                type="button"
-                aria-label="Bir artır"
-                data-plus="${escapeText(id)}"
-              >+</button>
-            </div>
-          </div>
-        `).join("");
-      }
-
-      const total = entries.reduce(
-        (sum, [, entry]) =>
-          sum + entry.product.price * entry.quantity,
-        0
-      );
-
-      $("cartTotal").textContent = money(total);
-
-      $("cartItems").querySelectorAll("[data-minus]").forEach((button) => {
-        button.addEventListener("click", () =>
-          changeQuantity(button.dataset.minus, -1)
-        );
-      });
-
-      $("cartItems").querySelectorAll("[data-plus]").forEach((button) => {
-        button.addEventListener("click", () =>
-          changeQuantity(button.dataset.plus, 1)
-        );
-      });
-    }
-
-    function sendOrder() {
-      const entries = [...state.cart.values()];
-
-      if (entries.length === 0) {
-        alert("Lütfen önce sepetinize ürün ekleyin.");
-        return;
-      }
-
-      if (!state.table) {
-        alert(
-          "Masa numarası bağlantıdan okunamadı. Lütfen masanızdaki QR kodu tekrar tarayın."
-        );
-        return;
-      }
-
-      if (!/^\d{10,15}$/.test(WHATSAPP_NUMBER)) {
-        alert(
-          "WhatsApp siparişi için index.html dosyasındaki WHATSAPP_NUMBER alanını kontrol edin."
-        );
-        return;
-      }
-
-      const total = entries.reduce(
-        (sum, entry) =>
-          sum + entry.product.price * entry.quantity,
-        0
-      );
-
-      // Müşterinin yazdığı notu oku.
-      const customerNote = $("customerNote").value.trim();
-
-      // Sipariş mesajını oluştur.
-      const lines = [
-        "Tarihi Rumeli Çorbacısı - Sipariş",
-        "Masa: " + state.table,
-        "",
-        ...entries.map((entry) =>
-          entry.product.name + " x " + entry.quantity +
-          " = " + money(entry.product.price * entry.quantity)
-        ),
-        "",
-        "Toplam: " + money(total),
-        "",
-        "MÜŞTERİ NOTU:",
-        customerNote || "Müşteri not yazmadı."
-      ];
-
-      const url =
-        "https://wa.me/" + WHATSAPP_NUMBER +
-        "?text=" + encodeURIComponent(lines.join("\n"));
-
-      window.open(url, "_blank", "noopener,noreferrer");
-    }
-
-    function initializeTable() {
-      state.table = getTableNumber();
-
-      if (state.table) {
-        $("tableBadge").textContent = "Masa " + state.table;
-      } else {
-        $("tableBadge").textContent = "Masa numarası bulunamadı";
-      }
-    }
-
-    $("search").addEventListener("input", renderMenu);
-    $("orderBtn").addEventListener("click", sendOrder);
-
-    initializeTable();
-    renderCart();
-    loadMenu();
-  </script>
-</body>
-</html>
+              <button type="button" data-minus="${escapeText(id)}"
+                aria-l
