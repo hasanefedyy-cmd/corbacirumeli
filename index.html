@@ -72,6 +72,7 @@
       border: 1px solid var(--line);
       color: var(--muted);
       overflow-wrap: anywhere;
+      line-height: 1.5;
     }
 
     .status.error {
@@ -93,12 +94,13 @@
       margin: 18px 0;
     }
 
-    input, select, button, textarea {
-      font: inherit;
-    }
+    input, select, button, textarea { font: inherit; }
+    input, select, textarea { color: var(--ink); }
+    button { cursor: pointer; }
 
-    input, select, textarea {
-      color: var(--ink);
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
     }
 
     .search {
@@ -126,7 +128,6 @@
       border-radius: 25px;
       background: white;
       color: var(--ink);
-      cursor: pointer;
     }
 
     .category-btn.active {
@@ -192,8 +193,6 @@
       font-weight: bold;
       white-space: nowrap;
     }
-
-    button { cursor: pointer; }
 
     .add-btn, .primary-btn {
       border: 0;
@@ -306,6 +305,7 @@
       color: var(--muted);
       text-align: center;
       background: white;
+      line-height: 1.5;
     }
 
     .admin-footer {
@@ -316,7 +316,7 @@
       margin-top: 15px;
     }
 
-    .admin-open-btn, .logout-btn {
+    .admin-open-btn {
       padding: 10px 15px;
       border: 1px solid var(--line);
       border-radius: 9px;
@@ -359,9 +359,7 @@
       background: #fffdf9;
     }
 
-    .admin-form .full {
-      grid-column: 1 / -1;
-    }
+    .admin-form .full { grid-column: 1 / -1; }
 
     .admin-actions {
       display: flex;
@@ -424,6 +422,7 @@
       .add-btn { padding: 10px; }
       .admin-form { grid-template-columns: 1fr; }
       .admin-form .full { grid-column: auto; }
+      .cart { padding: 14px; }
     }
   </style>
 </head>
@@ -432,9 +431,7 @@
   <header>
     <h1 class="brand">Tarihi Rumeli Çorbacısı</h1>
     <p class="subtitle">Lezzetin gelenekle buluştuğu yer</p>
-    <div id="tableBadge" class="table-badge">
-      Masa numarası okunuyor...
-    </div>
+    <div id="tableBadge" class="table-badge">Masa numarası kontrol ediliyor...</div>
   </header>
 
   <main>
@@ -443,17 +440,11 @@
     </div>
 
     <div class="toolbar">
-      <input
-        id="search"
-        class="search"
-        type="search"
-        placeholder="Menüde ara..."
-        aria-label="Menüde ara"
-      >
+      <input id="search" class="search" type="search"
+        placeholder="Menüde ara..." aria-label="Menüde ara">
     </div>
 
-    <nav id="categories" class="categories"
-      aria-label="Menü kategorileri"></nav>
+    <nav id="categories" class="categories" aria-label="Menü kategorileri"></nav>
 
     <h2 class="section-title">Menümüz</h2>
     <div id="menu" class="menu-grid"></div>
@@ -467,88 +458,87 @@
         <span id="cartTotal">0,00 TL</span>
       </div>
 
-      <label class="customer-note-label" for="customerNote">
-        Sipariş notunuz
-      </label>
-
-      <textarea
-        id="customerNote"
-        class="customer-note"
-        maxlength="500"
+      <label class="customer-note-label" for="customerNote">Sipariş notunuz</label>
+      <textarea id="customerNote" class="customer-note" maxlength="500"
         placeholder="Örn. Acısız olsun, ekmek ekleyin, soğan olmasın..."
-        aria-describedby="noteHelp"
-      ></textarea>
+        aria-describedby="noteHelp"></textarea>
 
       <p id="noteHelp" class="note-help">
-        Buraya yazdığınız not WhatsApp sipariş mesajınıza eklenecektir.
+        Sipariş notunuz WhatsApp mesajına eklenecektir.
       </p>
 
-      <button id="orderBtn" class="order-btn">
+      <button id="orderBtn" class="order-btn" type="button">
         WhatsApp ile sipariş ver
       </button>
 
-      <p class="subtitle" style="color:var(--muted)">
+      <p class="note-help">
         Siparişinizi göndermeden önce WhatsApp ekranında kontrol edebilirsiniz.
       </p>
     </section>
 
-    <!-- YÖNETİCİ PANELİ -->
     <section id="adminPanel" class="admin-panel hidden">
       <h2>Yönetici paneli</h2>
       <p>Menü ürünlerini buradan ekleyebilir, düzenleyebilir veya silebilirsin.</p>
 
-      <div id="adminStatus" class="status hidden"
-        role="status" aria-live="polite"></div>
+      <div id="adminStatus" class="status hidden" role="status" aria-live="polite"></div>
 
-      <form id="adminForm" class="admin-form">
-        <input id="editId" type="hidden">
+      <div id="loginArea">
+        <form id="loginForm">
+          <label for="adminPassword">Yönetici şifresi</label>
+          <input id="adminPassword" type="password" autocomplete="current-password"
+            required class="search" placeholder="Yönetici şifrenizi girin">
+          <button class="primary-btn" type="submit">Giriş yap</button>
+        </form>
+      </div>
 
-        <label>
-          Ürün adı
-          <input id="productName" type="text"
-            maxlength="150" required placeholder="Örn. Mercimek Çorbası">
-        </label>
+      <div id="adminArea" class="hidden">
+        <form id="adminForm" class="admin-form">
+          <input id="editId" type="hidden">
 
-        <label>
-          Kategori
-          <input id="productCategory" type="text"
-            maxlength="100" required list="categorySuggestions"
-            placeholder="Örn. Çorbalar">
-          <datalist id="categorySuggestions">
-            <option value="Çorbalar"></option>
-            <option value="Pideler"></option>
-            <option value="Izgaralar"></option>
-            <option value="İçecekler"></option>
-            <option value="Tatlılar"></option>
-          </datalist>
-        </label>
+          <label>
+            Ürün adı
+            <input id="productName" type="text" maxlength="150"
+              required placeholder="Örn. Mercimek Çorbası">
+          </label>
 
-        <label class="full">
-          Fiyat (TL)
-          <input id="productPrice" type="number"
-            min="0" max="1000000" step="0.01" required
-            placeholder="150">
-        </label>
+          <label>
+            Kategori
+            <input id="productCategory" type="text" maxlength="100"
+              required list="categorySuggestions" placeholder="Örn. Çorbalar">
+            <datalist id="categorySuggestions">
+              <option value="Çorbalar"></option>
+              <option value="Pideler"></option>
+              <option value="Izgaralar"></option>
+              <option value="İçecekler"></option>
+              <option value="Tatlılar"></option>
+            </datalist>
+          </label>
 
-        <div class="admin-actions full">
-          <button id="saveProductBtn" class="primary-btn" type="submit">
-            Ürün ekle
-          </button>
-          <button id="cancelEditBtn" class="secondary-btn hidden"
-            type="button">Düzenlemeyi iptal et</button>
-          <button id="refreshAdminBtn" class="secondary-btn" type="button">
-            Menüyü yenile
-          </button>
+          <label class="full">
+            Fiyat (TL)
+            <input id="productPrice" type="number" min="0" max="1000000"
+              step="0.01" required placeholder="150">
+          </label>
+
+          <div class="admin-actions full">
+            <button id="saveProductBtn" class="primary-btn" type="submit">
+              Ürün ekle
+            </button>
+            <button id="cancelEditBtn" class="secondary-btn hidden" type="button">
+              Düzenlemeyi iptal et
+            </button>
+            <button id="refreshAdminBtn" class="secondary-btn" type="button">
+              Menüyü yenile
+            </button>
+          </div>
+        </form>
+
+        <h3>Mevcut ürünler</h3>
+        <div id="adminProductList" class="admin-product-list"></div>
+
+        <div class="admin-actions">
+          <button id="logoutBtn" class="danger-btn" type="button">Çıkış yap</button>
         </div>
-      </form>
-
-      <h3>Mevcut ürünler</h3>
-      <div id="adminProductList" class="admin-product-list"></div>
-
-      <div class="admin-actions">
-        <button id="logoutBtn" class="danger-btn" type="button">
-          Yönetici oturumunu kapat
-        </button>
       </div>
     </section>
   </main>
@@ -565,9 +555,9 @@
   <script>
     "use strict";
 
-    const API_URL = "/api/menu";
+    // Netlify Functions varsayılan adresi:
+    const API_URL = "/.netlify/functions/menu";
     const WHATSAPP_NUMBER = "905404721414";
-    const SESSION_KEY = "rumeli_admin_password";
 
     const state = {
       products: [],
@@ -575,33 +565,10 @@
       cart: new Map(),
       table: null,
       adminPassword: null,
-      editingId: null,
-      loading: false
+      editingId: null
     };
 
     const $ = (id) => document.getElementById(id);
-
-    function getTableNumber() {
-      const path = window.location.pathname;
-      const match = path.match(/^\/masa\/?(\d+)\/?$/i);
-
-      if (match) {
-        const number = Number(match[1]);
-        return Number.isSafeInteger(number) && number > 0
-          ? number : null;
-      }
-
-      const params = new URLSearchParams(window.location.search);
-      const value = params.get("masa") || params.get("table");
-
-      if (value && /^\d+$/.test(value)) {
-        const number = Number(value);
-        return Number.isSafeInteger(number) && number > 0
-          ? number : null;
-      }
-
-      return null;
-    }
 
     function escapeText(value) {
       return String(value ?? "").replace(/[&<>"']/g, (char) => ({
@@ -614,18 +581,49 @@
     }
 
     function money(value) {
-      return Number(value).toLocaleString("tr-TR", {
+      const number = Number(value);
+      return (Number.isFinite(number) ? number : 0).toLocaleString("tr-TR", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       }) + " TL";
     }
 
-    function showStatus(message, isError = false) {
+    function getTableNumber() {
+      const params = new URLSearchParams(window.location.search);
+      const value = params.get("masa") || params.get("table");
+
+      if (value && /^\d+$/.test(value)) {
+        const number = Number(value);
+        if (Number.isSafeInteger(number) && number >= 1 && number <= 30) {
+          return number;
+        }
+      }
+
+      const match = window.location.pathname.match(/^\/masa\/?(\d+)\/?$/i);
+      if (match) {
+        const number = Number(match[1]);
+        if (Number.isSafeInteger(number) && number >= 1 && number <= 30) {
+          return number;
+        }
+      }
+
+      return null;
+    }
+
+    function renderTableBadge() {
+      state.table = getTableNumber();
+
+      if (state.table !== null) {
+        $("tableBadge").textContent = "Masa " + state.table;
+      } else {
+        $("tableBadge").textContent = "Tarihi Rumeli Çorbacısı";
+      }
+    }
+
+    function showStatus(message, type = "") {
       const box = $("status");
       box.textContent = message;
-      box.classList.remove("hidden", "error", "success");
-
-      if (isError) box.classList.add("error");
+      box.className = "status" + (type ? " " + type : "");
     }
 
     function hideStatus() {
@@ -635,8 +633,7 @@
     function showAdminStatus(message, isError = false) {
       const box = $("adminStatus");
       box.textContent = message;
-      box.classList.remove("hidden", "error", "success");
-      box.classList.add(isError ? "error" : "success");
+      box.className = "status " + (isError ? "error" : "success");
     }
 
     function normalizeProducts(data) {
@@ -647,14 +644,14 @@
       return null;
     }
 
-    async function apiRequest(url, options = {}, admin = false) {
+    async function apiRequest(url, options = {}, isAdmin = false) {
       const headers = {
         Accept: "application/json",
         ...(options.body ? { "Content-Type": "application/json" } : {}),
         ...(options.headers || {})
       };
 
-      if (admin) {
+      if (isAdmin) {
         if (!state.adminPassword) {
           throw new Error("Yönetici oturumu kapalı. Yeniden giriş yap.");
         }
@@ -668,22 +665,20 @@
       });
 
       const text = await response.text();
-      let data = null;
+      let data;
 
       try {
         data = text ? JSON.parse(text) : null;
       } catch {
-        data = { error: text || "Sunucudan geçersiz yanıt geldi." };
+        throw new Error(
+          "Sunucu JSON yerine farklı bir yanıt verdi. Function adresini ve Netlify dağıtımını kontrol edin."
+        );
       }
 
       if (!response.ok) {
-        if (response.status === 401 && admin) {
-          logout(false);
-        }
-
         throw new Error(
-          data?.error || data?.message ||
-          "İstek başarısız oldu (HTTP " + response.status + ")."
+          (data && (data.error || data.message)) ||
+          "Sunucu isteği başarısız: HTTP " + response.status
         );
       }
 
@@ -695,81 +690,76 @@
 
       try {
         const data = await apiRequest(API_URL);
-        const products = normalizeProducts(data);
+        const list = normalizeProducts(data);
 
-        if (!products) {
-          throw new Error("Sunucudan geçerli ürün listesi alınamadı.");
+        if (!list) {
+          throw new Error("Sunucudan geçerli bir ürün listesi alınamadı.");
         }
 
-        state.products = products
+        state.products = list
           .filter((item) =>
             item &&
             item.id !== undefined &&
-            typeof item.name === "string" &&
+            item.name !== undefined &&
             Number.isFinite(Number(item.price))
           )
           .map((item) => ({
             id: String(item.id),
-            name: item.name,
+            name: String(item.name),
             category: String(item.category || "Diğer"),
-            price: Number(item.price)
+            price: Number(item.price),
+            description: String(item.description || ""),
+            available: item.available !== false && item.is_available !== false
           }));
 
         renderCategories();
         renderMenu();
         renderCart();
-        hideStatus();
 
-        if (!state.products.length) {
-          showStatus("Menüde henüz ürün bulunmuyor.");
+        if (state.products.length === 0) {
+          showStatus("API yanıt verdi ancak menüde ürün bulunamadı.");
+        } else {
+          hideStatus();
         }
 
-        if (state.adminPassword) {
-          renderAdminProducts();
-        }
+        if (state.adminPassword) renderAdminProducts();
       } catch (error) {
         console.error("Menü yükleme hatası:", error);
-        showStatus("Menü yüklenemedi: " + error.message, true);
+        $("categories").innerHTML = "";
+        $("menu").innerHTML = "";
+        showStatus("Menü yüklenemedi: " + error.message, "error");
       }
     }
 
     function renderCategories() {
-      const names = [
+      const categories = [
         "Tümü",
         ...new Set(state.products.map((item) => item.category))
       ];
 
-      if (!names.includes(state.category)) state.category = "Tümü";
+      if (!categories.includes(state.category)) state.category = "Tümü";
 
-      $("categories").innerHTML = names.map((name) => `
+      $("categories").innerHTML = categories.map((category) => `
         <button type="button"
-          class="category-btn ${state.category === name ? "active" : ""}"
-          data-category="${escapeText(name)}">
-          ${escapeText(name)}
+          class="category-btn ${state.category === category ? "active" : ""}"
+          data-category="${escapeText(category)}">
+          ${escapeText(category)}
         </button>
       `).join("");
-
-      $("categories").querySelectorAll("[data-category]").forEach((button) => {
-        button.addEventListener("click", () => {
-          state.category = button.dataset.category;
-          renderCategories();
-          renderMenu();
-        });
-      });
     }
 
     function renderMenu() {
       const query = $("search").value.trim().toLocaleLowerCase("tr-TR");
 
       const filtered = state.products.filter((item) => {
-        const categoryMatches =
+        const matchesCategory =
           state.category === "Tümü" || item.category === state.category;
 
-        const searchMatches =
-          (item.name + " " + item.category)
-            .toLocaleLowerCase("tr-TR").includes(query);
+        const searchable = (
+          item.name + " " + item.category + " " + item.description
+        ).toLocaleLowerCase("tr-TR");
 
-        return categoryMatches && searchMatches;
+        return matchesCategory && searchable.includes(query);
       });
 
       if (!filtered.length) {
@@ -782,22 +772,24 @@
         <article class="product">
           <span class="product-category">${escapeText(item.category)}</span>
           <h3>${escapeText(item.name)}</h3>
+          ${item.description
+            ? `<p>${escapeText(item.description)}</p>`
+            : ""}
           <div class="product-bottom">
             <span class="price">${money(item.price)}</span>
             <button type="button" class="add-btn"
-              data-add="${escapeText(item.id)}">Sepete ekle</button>
+              data-add="${escapeText(item.id)}"
+              ${item.available ? "" : "disabled"}>
+              ${item.available ? "Sepete ekle" : "Stokta yok"}
+            </button>
           </div>
         </article>
       `).join("");
-
-      $("menu").querySelectorAll("[data-add]").forEach((button) => {
-        button.addEventListener("click", () => addToCart(button.dataset.add));
-      });
     }
 
     function addToCart(id) {
       const product = state.products.find((item) => item.id === id);
-      if (!product) return;
+      if (!product || !product.available) return;
 
       const existing = state.cart.get(id);
       state.cart.set(id, {
@@ -809,27 +801,4 @@
     }
 
     function changeQuantity(id, amount) {
-      const entry = state.cart.get(id);
-      if (!entry) return;
-
-      entry.quantity += amount;
-
-      if (entry.quantity <= 0) state.cart.delete(id);
-      else state.cart.set(id, entry);
-
-      renderCart();
-    }
-
-    function renderCart() {
-      const entries = [...state.cart.entries()];
-
-      $("cartItems").innerHTML = entries.length
-        ? entries.map(([id, entry]) => `
-          <div class="cart-row">
-            <div>
-              <strong>${escapeText(entry.product.name)}</strong><br>
-              <small>${money(entry.product.price * entry.quantity)}</small>
-            </div>
-            <div class="quantity">
-              <button type="button" data-minus="${escapeText(id)}"
-                aria-l
+      
