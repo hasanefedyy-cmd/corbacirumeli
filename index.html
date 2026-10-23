@@ -20,13 +20,9 @@
       --green: #286442;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
@@ -58,12 +54,14 @@
 
     .table-badge {
       display: inline-block;
+      max-width: 100%;
       margin-top: 17px;
       padding: 9px 16px;
       border: 1px solid var(--gold);
       border-radius: 25px;
       color: #fff8eb;
       font-weight: bold;
+      overflow-wrap: anywhere;
     }
 
     main {
@@ -101,12 +99,7 @@
       margin: 18px 0;
     }
 
-    input,
-    select,
-    button,
-    textarea {
-      font: inherit;
-    }
+    input, select, button, textarea { font: inherit; }
 
     button {
       cursor: pointer;
@@ -163,10 +156,7 @@
 
     .menu-grid {
       display: grid;
-      grid-template-columns: repeat(
-        auto-fit,
-        minmax(min(100%, 245px), 1fr)
-      );
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 245px), 1fr));
       gap: 13px;
     }
 
@@ -212,8 +202,7 @@
       white-space: nowrap;
     }
 
-    .add-btn,
-    .primary-btn {
+    .add-btn, .primary-btn {
       border: 0;
       border-radius: 9px;
       padding: 11px 14px;
@@ -222,8 +211,7 @@
       font-weight: bold;
     }
 
-    .add-btn:active,
-    .primary-btn:active {
+    .add-btn:active, .primary-btn:active {
       transform: scale(.98);
     }
 
@@ -342,34 +330,15 @@
       font-size: 13px;
     }
 
-    .hidden {
-      display: none !important;
-    }
+    .hidden { display: none !important; }
 
     @media (max-width: 420px) {
-      main {
-        width: calc(100% - 20px);
-      }
-
-      .product {
-        padding: 14px;
-      }
-
-      .add-btn {
-        padding: 10px;
-      }
-
-      .cart {
-        padding: 14px;
-      }
-
-      .cart-row {
-        gap: 8px;
-      }
-
-      .quantity {
-        gap: 5px;
-      }
+      main { width: calc(100% - 20px); }
+      .product { padding: 14px; }
+      .add-btn { padding: 10px; }
+      .cart { padding: 14px; }
+      .cart-row { gap: 8px; }
+      .quantity { gap: 5px; }
     }
   </style>
 </head>
@@ -399,18 +368,13 @@
       >
     </div>
 
-    <nav
-      id="categories"
-      class="categories"
-      aria-label="Menü kategorileri"
-    ></nav>
+    <nav id="categories" class="categories" aria-label="Menü kategorileri"></nav>
 
     <h2 class="section-title">Menümüz</h2>
     <div id="menu" class="menu-grid"></div>
 
     <section class="cart" aria-label="Sipariş sepeti">
       <h2>Sipariş sepetim</h2>
-
       <div id="cartItems"></div>
 
       <div class="cart-total">
@@ -451,16 +415,14 @@
   <script>
     "use strict";
 
-    // Menü API adresleri sırayla denenir.
-    // İkinci adresin çalışması, Netlify'da bu fonksiyonun mevcut olmasına bağlıdır.
+    // Önce çalışan API adresi denenir; diğeri yedek olarak kullanılır.
     const API_URLS = [
       "/api/menu",
       "/.netlify/functions/menu"
     ];
 
-    // Restoranın WhatsApp numarası.
-    // Ülke koduyla yazılmalı; +, boşluk veya tire kullanılmamalıdır.
     const WHATSAPP_NUMBER = "905404721414";
+    const REQUEST_TIMEOUT_MS = 8000;
 
     const state = {
       products: [],
@@ -471,43 +433,25 @@
 
     const $ = (id) => document.getElementById(id);
 
-    // Masa numarasını URL'den bulur.
-    // Desteklenen biçimler:
-    // ?masa=5
-    // ?table=5
-    // /masa/5
-    // /masa5
-    function getTableNumber() {
-      const params = new URLSearchParams(window.location.search);
+    // URL parametre adlarını büyük/küçük harf farkı olmadan kontrol eder.
+    function readTableFromParams(params) {
+      const acceptedNames = [
+        "masa",
+        "table",
+        "masano",
+        "masa_no",
+        "masano",
+        "m"
+      ];
 
-      const queryValue = params.get("masa") || params.get("table");
+      for (const [key, value] of params.entries()) {
+        if (!acceptedNames.includes(key.toLowerCase())) continue;
 
-      if (queryValue && /^\d+$/.test(queryValue)) {
-        const number = Number(queryValue);
+        if (!/^\d{1,2}$/.test(value)) continue;
 
-        if (
-          Number.isSafeInteger(number) &&
-          number >= 1 &&
-          number <= 30
-        ) {
-          return number;
-        }
-      }
+        const number = Number(value);
 
-      const path = window.location.pathname;
-
-      const match =
-        path.match(/^\/masa\/?(\d+)\/?$/i) ||
-        path.match(/^\/masa(\d+)\/?$/i);
-
-      if (match) {
-        const number = Number(match[1]);
-
-        if (
-          Number.isSafeInteger(number) &&
-          number >= 1 &&
-          number <= 30
-        ) {
+        if (Number.isSafeInteger(number) && number >= 1 && number <= 30) {
           return number;
         }
       }
@@ -515,9 +459,71 @@
       return null;
     }
 
+    // Desteklenen bağlantılar:
+    // ?masa=5
+    // ?table=5
+    // ?masaNo=5
+    // /masa/5
+    // /masa5
+    // /table/5
+    // /table5
+    // #masa=5
+    function getTableNumber() {
+      const fromQuery = readTableFromParams(
+        new URLSearchParams(window.location.search)
+      );
+
+      if (fromQuery !== null) return fromQuery;
+
+      const rawHash = window.location.hash.replace(/^#/, "");
+      const hashQuery = rawHash.includes("?")
+        ? rawHash.slice(rawHash.indexOf("?") + 1)
+        : rawHash;
+
+      const fromHash = readTableFromParams(
+        new URLSearchParams(hashQuery)
+      );
+
+      if (fromHash !== null) return fromHash;
+
+      let path = window.location.pathname;
+
+      try {
+        path = decodeURIComponent(path);
+      } catch (error) {
+        console.warn("URL yolu çözümlenemedi:", error);
+      }
+
+      const patterns = [
+        /^\/(?:masa|table)\/(\d{1,2})\/?$/i,
+        /^\/(?:masa|table)(\d{1,2})\/?$/i
+      ];
+
+      for (const pattern of patterns) {
+        const match = path.match(pattern);
+
+        if (match) {
+          const number = Number(match[1]);
+
+          if (Number.isSafeInteger(number) && number >= 1 && number <= 30) {
+            return number;
+          }
+        }
+      }
+
+      return null;
+    }
+
+    function initializeTable() {
+      state.table = getTableNumber();
+
+      $("tableBadge").textContent = state.table !== null
+        ? "Masa " + state.table
+        : "Masa numarası okunamadı — QR bağlantısını kontrol edin";
+    }
+
     function showStatus(message, isError = false, isSuccess = false) {
       const box = $("status");
-
       box.textContent = message;
       box.classList.toggle("error", isError);
       box.classList.toggle("success", isSuccess);
@@ -531,9 +537,7 @@
     function money(value) {
       const amount = Number(value);
 
-      if (!Number.isFinite(amount)) {
-        return "0,00 TL";
-      }
+      if (!Number.isFinite(amount)) return "0,00 TL";
 
       return amount.toLocaleString("tr-TR", {
         minimumFractionDigits: 2,
@@ -541,7 +545,6 @@
       }) + " TL";
     }
 
-    // HTML'e basılan metinleri güvenli hâle getirir.
     function escapeText(value) {
       return String(value ?? "").replace(/[&<>"']/g, (char) => ({
         "&": "&amp;",
@@ -553,57 +556,65 @@
     }
 
     function normalizeProducts(data) {
-      if (Array.isArray(data)) {
-        return data;
-      }
-
-      if (data && Array.isArray(data.products)) {
-        return data.products;
-      }
-
-      if (data && Array.isArray(data.menu)) {
-        return data.menu;
-      }
-
-      if (data && Array.isArray(data.data)) {
-        return data.data;
-      }
-
+      if (Array.isArray(data)) return data;
+      if (data && Array.isArray(data.products)) return data.products;
+      if (data && Array.isArray(data.menu)) return data.menu;
+      if (data && Array.isArray(data.data)) return data.data;
       return null;
     }
 
-    // Bir API adresi başarısız olursa diğer adres denenir.
+    async function fetchMenuFrom(url) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        REQUEST_TIMEOUT_MS
+      );
+
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: { "Accept": "application/json" },
+          cache: "no-store",
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          throw new Error(url + " adresi HTTP " + response.status + " yanıtı verdi.");
+        }
+
+        const text = await response.text();
+
+        let data;
+
+        try {
+          data = JSON.parse(text);
+        } catch (error) {
+          throw new Error(url + " geçerli JSON döndürmedi.");
+        }
+
+        const products = normalizeProducts(data);
+
+        if (!products) {
+          throw new Error(url + " adresinde ürün listesi bulunamadı.");
+        }
+
+        return products;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
+
     async function loadMenu() {
       showStatus("Menü yükleniyor...");
 
       let lastError = null;
+      let loaded = false;
 
       for (const url of API_URLS) {
         try {
-          const response = await fetch(url, {
-            method: "GET",
-            headers: {
-              "Accept": "application/json"
-            },
-            cache: "no-store"
-          });
+          const rawProducts = await fetchMenuFrom(url);
 
-          if (!response.ok) {
-            throw new Error(
-              url + " adresi HTTP " + response.status + " yanıtı verdi."
-            );
-          }
-
-          const data = await response.json();
-          const products = normalizeProducts(data);
-
-          if (!products) {
-            throw new Error(
-              url + " adresinden geçerli bir ürün listesi alınamadı."
-            );
-          }
-
-          state.products = products
+          const validProducts = rawProducts
             .filter((item) =>
               item &&
               item.id !== undefined &&
@@ -623,40 +634,44 @@
               price: Number(item.price)
             }));
 
-          renderCategories();
-          renderMenu();
-
-          if (state.products.length === 0) {
-            showStatus(
-              "Menü servisine ulaşıldı ancak gösterilebilecek ürün bulunamadı."
-            );
-          } else {
-            hideStatus();
-          }
-
-          return;
+          state.products = validProducts;
+          loaded = true;
+          break;
         } catch (error) {
           lastError = error;
-          console.error("Menü adresi başarısız:", url, error);
+          console.error("Menü API hatası:", url, error);
         }
       }
 
-      state.products = [];
+      if (!loaded) {
+        state.products = [];
+        renderCategories();
+        renderMenu();
+
+        const detail = lastError && lastError.name === "AbortError"
+          ? "Sunucu zamanında cevap vermedi. Lütfen tekrar deneyin."
+          : (lastError ? lastError.message : "Bilinmeyen hata.");
+
+        showStatus(
+          "Menü yüklenemedi. İnternet bağlantısını ve API adresini kontrol edin. " + detail,
+          true
+        );
+        return;
+      }
+
       renderCategories();
       renderMenu();
 
-      showStatus(
-        "Menü yüklenemedi. API adreslerini ve Netlify menü fonksiyonunu kontrol edin. Ayrıntı: " +
-        (lastError ? lastError.message : "Bilinmeyen hata"),
-        true
-      );
+      if (state.products.length === 0) {
+        showStatus("API yanıt verdi ancak gösterilebilecek ürün bulunamadı.");
+      } else {
+        hideStatus();
+      }
     }
 
     function renderCategories() {
       const categoryNames = [
-        ...new Set(
-          state.products.map((item) => item.category)
-        )
+        ...new Set(state.products.map((item) => item.category))
       ];
 
       const names = ["Tümü", ...categoryNames];
@@ -677,7 +692,6 @@
       $("categories").querySelectorAll("[data-category]").forEach((button) => {
         button.addEventListener("click", () => {
           state.category = button.dataset.category;
-
           renderCategories();
           renderMenu();
         });
@@ -691,16 +705,13 @@
 
       const filtered = state.products.filter((item) => {
         const categoryMatches =
-          state.category === "Tümü" ||
-          item.category === state.category;
+          state.category === "Tümü" || item.category === state.category;
 
         const searchableText = (
           item.name + " " + item.category
         ).toLocaleLowerCase("tr-TR");
 
-        const searchMatches = searchableText.includes(query);
-
-        return categoryMatches && searchMatches;
+        return categoryMatches && searchableText.includes(query);
       });
 
       if (filtered.length === 0) {
@@ -718,15 +729,11 @@
 
       $("menu").innerHTML = filtered.map((item) => `
         <article class="product">
-          <span class="product-category">
-            ${escapeText(item.category)}
-          </span>
-
+          <span class="product-category">${escapeText(item.category)}</span>
           <h3>${escapeText(item.name)}</h3>
 
           <div class="product-bottom">
             <span class="price">${money(item.price)}</span>
-
             <button
               type="button"
               class="add-btn"
@@ -738,20 +745,13 @@
       `).join("");
 
       $("menu").querySelectorAll("[data-add]").forEach((button) => {
-        button.addEventListener("click", () => {
-          addToCart(button.dataset.add);
-        });
+        button.addEventListener("click", () => addToCart(button.dataset.add));
       });
     }
 
     function addToCart(id) {
-      const product = state.products.find(
-        (item) => item.id === id
-      );
-
-      if (!product) {
-        return;
-      }
+      const product = state.products.find((item) => item.id === id);
+      if (!product) return;
 
       const existing = state.cart.get(id);
 
@@ -761,20 +761,12 @@
       });
 
       renderCart();
-
-      showStatus(
-        product.name + " sepete eklendi.",
-        false,
-        true
-      );
+      showStatus(product.name + " sepete eklendi.", false, true);
     }
 
     function changeQuantity(id, amount) {
       const entry = state.cart.get(id);
-
-      if (!entry) {
-        return;
-      }
+      if (!entry) return;
 
       entry.quantity += amount;
 
@@ -799,9 +791,7 @@
           <div class="cart-row">
             <div>
               <strong>${escapeText(entry.product.name)}</strong><br>
-              <small>
-                ${money(entry.product.price * entry.quantity)}
-              </small>
+              <small>${money(entry.product.price * entry.quantity)}</small>
             </div>
 
             <div class="quantity">
@@ -824,8 +814,7 @@
       }
 
       const total = entries.reduce(
-        (sum, [, entry]) =>
-          sum + entry.product.price * entry.quantity,
+        (sum, [, entry]) => sum + entry.product.price * entry.quantity,
         0
       );
 
@@ -839,49 +828,4 @@
 
       $("cartItems").querySelectorAll("[data-plus]").forEach((button) => {
         button.addEventListener("click", () => {
-          changeQuantity(button.dataset.plus, 1);
-        });
-      });
-    }
-
-    function sendOrder() {
-      const entries = [...state.cart.values()];
-
-      if (entries.length === 0) {
-        alert("Lütfen önce sepetinize ürün ekleyin.");
-        return;
-      }
-
-      if (!state.table) {
-        alert(
-          "Masa numarası bağlantıdan okunamadı. Masanıza ait QR kodu tekrar tarayın."
-        );
-        return;
-      }
-
-      if (!/^\d{10,15}$/.test(WHATSAPP_NUMBER)) {
-        alert(
-          "WhatsApp numarası geçersiz. index.html içindeki WHATSAPP_NUMBER değerini kontrol edin."
-        );
-        return;
-      }
-
-      const total = entries.reduce(
-        (sum, entry) =>
-          sum + entry.product.price * entry.quantity,
-        0
-      );
-
-      const customerNote = $("customerNote").value.trim();
-
-      const lines = [
-        "Tarihi Rumeli Çorbacısı - Sipariş",
-        "Masa: " + state.table,
-        "",
-        ...entries.map((entry) =>
-          entry.product.name +
-          " x " +
-          entry.quantity +
-          " = " +
-          money(entry.product.price * entry.quantity)
-        ),
+          changeQuanti
