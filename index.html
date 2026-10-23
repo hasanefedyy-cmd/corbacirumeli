@@ -114,63 +114,57 @@
 
     const $ = id => document.getElementById(id);
 
-    // URL'den masa numarasını farklı bağlantı biçimleriyle oku.
+    // Masa numarası yalnızca mevcut URL'den okunur.
+    // Desteklenen örnekler:
+    // ?masa=7, ?table=7, ?masano=7, ?masa_no=7, ?m=7
+    // /masa/7, /table/7, /masa7
+    // #masa=7
     function getTableNumber() {
-      const acceptedNames = ["masa", "table", "masano", "masa_no", "m"];
-
-      function validate(value) {
+      const valid = value => {
         if (value === null || value === undefined) return null;
+
         const text = String(value).trim();
         if (!/^\d{1,2}$/.test(text)) return null;
 
         const number = Number(text);
-        return Number.isInteger(number) && number >= 1 && number <= 30
-          ? number
-          : null;
-      }
+        return number >= 1 && number <= 30 ? number : null;
+      };
 
-      // Normal sorgu parametreleri: ?masa=7
       const params = new URLSearchParams(window.location.search);
+      const keys = ["masa", "table", "masano", "masa_no", "m"];
 
-      for (const name of acceptedNames) {
-        const number = validate(params.get(name));
+      for (const key of keys) {
+        const number = valid(params.get(key));
         if (number !== null) return number;
       }
 
-      // Hash biçimleri: #masa=7, #?masa=7 veya #/masa/7
       const hash = window.location.hash.replace(/^#/, "");
-
       const hashParams = new URLSearchParams(
         hash.includes("?") ? hash.slice(hash.indexOf("?") + 1) : hash
       );
 
-      for (const name of acceptedNames) {
-        const number = validate(hashParams.get(name));
+      for (const key of keys) {
+        const number = valid(hashParams.get(key));
         if (number !== null) return number;
       }
 
-      const hashMatch = hash.match(
-        /(?:^|[/?&])(?:masa|table)\/?(\d{1,2})(?:\/|&|$)/i
+      const hashParamMatch = hash.match(
+        /(?:^|[?&#])(?:masa|table|masano|masa_no|m)=(\d{1,2})(?:&|$)/i
       );
 
-      if (hashMatch) {
-        const number = validate(hashMatch[1]);
+      if (hashParamMatch) {
+        const number = valid(hashParamMatch[1]);
         if (number !== null) return number;
       }
 
-      // Yol biçimleri: /masa/7, /table/7 veya /masa7
       let path = window.location.pathname;
-
       try {
         path = decodeURIComponent(path);
       } catch (_) {}
 
-      const pathMatch = path.match(
-        /\/(?:masa|table)\/?(\d{1,2})\/?$/i
-      );
-
+      const pathMatch = path.match(/\/(?:masa|table)\/?(\d{1,2})\/?$/i);
       if (pathMatch) {
-        const number = validate(pathMatch[1]);
+        const number = valid(pathMatch[1]);
         if (number !== null) return number;
       }
 
@@ -182,7 +176,7 @@
 
       $("tableBadge").textContent = state.table !== null
         ? "🪑 Masa " + state.table
-        : "Masa numarası bulunamadı — QR kodunu kontrol edin";
+        : "Masa numarası URL'de bulunamadı";
     }
 
     function showStatus(message, isError = false, isSuccess = false) {
@@ -199,7 +193,6 @@
 
     function money(value) {
       const amount = Number(value);
-
       if (!Number.isFinite(amount)) return "0,00 TL";
 
       return amount.toLocaleString("tr-TR", {
@@ -218,19 +211,13 @@
       })[char]);
     }
 
-    // API yanıtındaki ürün dizisini bul.
     function normalizeProducts(data) {
       if (Array.isArray(data)) return data;
       if (!data || typeof data !== "object") return null;
 
       const candidates = [
-        data.products,
-        data.menu,
-        data.items,
-        data.data,
-        data.results,
-        data.meals,
-        data.urunler
+        data.products, data.menu, data.items, data.data,
+        data.results, data.meals, data.urunler
       ];
 
       for (const candidate of candidates) {
@@ -249,28 +236,14 @@
     function normalizeProduct(item, index) {
       if (!item || typeof item !== "object") return null;
 
-      const name =
-        item.name ??
-        item.product_name ??
-        item.title ??
-        item.urun_adi ??
-        item.urun ??
-        item.ad ??
-        item.isim;
+      const name = item.name ?? item.product_name ?? item.title ??
+        item.urun_adi ?? item.urun ?? item.ad ?? item.isim;
 
-      const priceValue =
-        item.price ??
-        item.fiyat ??
-        item.unit_price ??
-        item.sale_price ??
-        item.price_tl;
+      const priceValue = item.price ?? item.fiyat ?? item.unit_price ??
+        item.sale_price ?? item.price_tl;
 
-      const category =
-        item.category ??
-        item.category_name ??
-        item.kategori ??
-        item.kategori_adi ??
-        "Diğer";
+      const category = item.category ?? item.category_name ??
+        item.kategori ?? item.kategori_adi ?? "Diğer";
 
       if (name === undefined || name === null || String(name).trim() === "") {
         return null;
@@ -280,7 +253,6 @@
         return null;
       }
 
-      // Hem 150,50 hem de 1.250,50 gibi fiyat biçimlerini destekle.
       let priceText = String(priceValue).trim().replace(/[^\d,.-]/g, "");
 
       if (priceText.includes(",") && priceText.includes(".")) {
@@ -289,31 +261,23 @@
         priceText = priceText.replace(",", ".");
       }
 
-      const numericPrice = Number(priceText);
+      const price = Number(priceText);
+      if (!Number.isFinite(price) || price < 0) return null;
 
-      if (!Number.isFinite(numericPrice) || numericPrice < 0) return null;
-
-      const id =
-        item.id ??
-        item.product_id ??
-        item.urun_id ??
-        item.uuid ??
-        ("product-" + index);
+      const id = item.id ?? item.product_id ?? item.urun_id ??
+        item.uuid ?? ("product-" + index);
 
       return {
         id: String(id),
         name: String(name).trim(),
         category: String(category || "Diğer").trim() || "Diğer",
-        price: numericPrice
+        price
       };
     }
 
     async function fetchMenuFrom(url) {
       const controller = new AbortController();
-      const timeoutId = setTimeout(
-        () => controller.abort(),
-        REQUEST_TIMEOUT_MS
-      );
+      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
       try {
         const response = await fetch(url, {
@@ -324,7 +288,7 @@
         });
 
         if (!response.ok) {
-          throw new Error(url + " adresi HTTP " + response.status + " hatası döndürdü.");
+          throw new Error(url + " HTTP " + response.status + " hatası verdi.");
         }
 
         const text = await response.text();
@@ -333,13 +297,12 @@
         try {
           data = JSON.parse(text);
         } catch (_) {
-          throw new Error(url + " JSON yerine farklı bir yanıt döndürdü.");
+          throw new Error(url + " geçerli JSON döndürmedi.");
         }
 
         const products = normalizeProducts(data);
-
         if (!products) {
-          throw new Error(url + " yanıtında ürün listesi bulunamadı.");
+          throw new Error(url + " içinde ürün listesi bulunamadı.");
         }
 
         return products.map((item, index) => normalizeProduct(item, index)).filter(Boolean);
@@ -363,11 +326,8 @@
           renderCategories();
           renderMenu();
 
-          if (state.products.length === 0) {
-            showStatus(
-              "API bağlantısı yanıt verdi ancak gösterilecek ürün bulunamadı. Ürün tablosunu ve fiyat alanlarını kontrol edin.",
-              true
-            );
+          if (products.length === 0) {
+            showStatus("Menü bağlantısı çalışıyor fakat ürün listesi boş.", true);
             $("retryBtn").classList.remove("hidden");
           } else {
             hideStatus();
@@ -376,7 +336,7 @@
           return;
         } catch (error) {
           lastError = error;
-          console.error("Menü yükleme hatası:", url, error);
+          console.error("Menü yüklenemedi:", url, error);
         }
       }
 
@@ -388,14 +348,14 @@
         ? (lastError.name === "AbortError"
           ? "Sunucu 10 saniye içinde yanıt vermedi."
           : lastError.message)
-        : "API adresleri yanıt vermedi.";
+        : "Menü API'sine ulaşılamadı.";
 
       showStatus("Menü yüklenemedi. Ayrıntı: " + detail, true);
       $("retryBtn").classList.remove("hidden");
     }
 
     function renderCategories() {
-      const categories = [...new Set(state.products.map(product => product.category))];
+      const categories = [...new Set(state.products.map(item => item.category))];
       const names = ["Tümü", ...categories];
 
       if (!names.includes(state.category)) state.category = "Tümü";
@@ -425,8 +385,8 @@
         const categoryMatches =
           state.category === "Tümü" || item.category === state.category;
 
-        const searchable =
-          (item.name + " " + item.category).toLocaleLowerCase("tr-TR");
+        const searchable = (item.name + " " + item.category)
+          .toLocaleLowerCase("tr-TR");
 
         return categoryMatches && searchable.includes(query);
       });
@@ -463,7 +423,6 @@
       if (!product) return;
 
       const old = state.cart.get(id);
-
       state.cart.set(id, {
         product,
         quantity: old ? old.quantity + 1 : 1
@@ -479,11 +438,8 @@
 
       entry.quantity += amount;
 
-      if (entry.quantity <= 0) {
-        state.cart.delete(id);
-      } else {
-        state.cart.set(id, entry);
-      }
+      if (entry.quantity <= 0) state.cart.delete(id);
+      else state.cart.set(id, entry);
 
       renderCart();
     }
@@ -525,7 +481,7 @@
       });
     }
 
-    // Sipariş mesajını oluştur ve masa numarasını mutlaka ekle.
+    // URL'deki masa numarası otomatik alınır ve WhatsApp mesajına eklenir.
     function sendOrder() {
       const entries = [...state.cart.entries()];
 
@@ -538,10 +494,7 @@
 
       if (table === null) {
         initializeTable();
-        alert(
-          "Masa numarası bulunamadı.\n\n" +
-          "QR kodunun bağlantısı ?masa=7 biçiminde olmalıdır."
-        );
+        alert("URL'de masa numarası bulunamadı. Masa numaralı QR kodunu kontrol edin.");
         return;
       }
 
@@ -557,20 +510,47 @@
         "TARİHİ RUMELİ ÇORBACISI - SİPARİŞ",
         "MASA NUMARASI: " + table,
         "",
-        "SİPARİŞ:"
+        "SİPARİŞLER:"
       ];
 
-      for (const [, entry] of entries) {
+      entries.forEach(([, entry]) => {
         lines.push(
           entry.product.name + " x " + entry.quantity +
           " = " + money(entry.product.price * entry.quantity)
         );
-      }
+      });
 
       lines.push("", "TOPLAM: " + money(total));
 
       const note = $("customerNote").value.trim();
+      if (note) lines.push("", "SİPARİŞ NOTU: " + note);
 
-      if (note) {
-        lines.push("", "SİPARİŞ NOTU: " + note);
-  
+      const message = lines.join("\n");
+
+      const whatsappURL =
+        "https://wa.me/" + WHATSAPP_NUMBER +
+        "?text=" + encodeURIComponent(message);
+
+      window.location.href = whatsappURL;
+    }
+
+    function initializePage() {
+      // Menü yüklenmesini beklemeden masa numarasını göster.
+      initializeTable();
+
+      $("search").addEventListener("input", renderMenu);
+      $("orderBtn").addEventListener("click", sendOrder);
+      $("retryBtn").addEventListener("click", loadMenu);
+
+      renderCart();
+      loadMenu();
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initializePage);
+    } else {
+      initializePage();
+    }
+  </script>
+</body>
+</html> 
