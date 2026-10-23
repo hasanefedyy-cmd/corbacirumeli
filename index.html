@@ -101,7 +101,6 @@
   <script>
     "use strict";
 
-    // Önce mevcut Netlify API yolları denenir.
     const API_URLS = ["/api/menu", "/.netlify/functions/menu"];
     const WHATSAPP_NUMBER = "905404721414";
     const REQUEST_TIMEOUT_MS = 10000;
@@ -113,51 +112,74 @@
       table: null
     };
 
-    const $ = (id) => document.getElementById(id);
+    const $ = id => document.getElementById(id);
 
-    // Masa numarasını sorgu parametresinden okur: ?masa=7 veya ?table=7
+    // URL'den masa numarasını farklı bağlantı biçimleriyle oku.
     function getTableNumber() {
       const acceptedNames = ["masa", "table", "masano", "masa_no", "m"];
 
-      function validNumber(value) {
-        if (!/^\d{1,2}$/.test(String(value || ""))) return null;
-        const n = Number(value);
-        return Number.isInteger(n) && n >= 1 && n <= 30 ? n : null;
+      function validate(value) {
+        if (value === null || value === undefined) return null;
+        const text = String(value).trim();
+        if (!/^\d{1,2}$/.test(text)) return null;
+
+        const number = Number(text);
+        return Number.isInteger(number) && number >= 1 && number <= 30
+          ? number
+          : null;
       }
 
+      // Normal sorgu parametreleri: ?masa=7
       const params = new URLSearchParams(window.location.search);
 
       for (const name of acceptedNames) {
-        const value = params.get(name);
-        const n = validNumber(value);
-        if (n !== null) return n;
+        const number = validate(params.get(name));
+        if (number !== null) return number;
       }
 
-      // Hash içinde ?masa=7 veya #masa=7 biçimleri
+      // Hash biçimleri: #masa=7, #?masa=7 veya #/masa/7
       const hash = window.location.hash.replace(/^#/, "");
-      const hashQuery = hash.includes("?") ? hash.slice(hash.indexOf("?") + 1) : hash;
-      const hashParams = new URLSearchParams(hashQuery);
+
+      const hashParams = new URLSearchParams(
+        hash.includes("?") ? hash.slice(hash.indexOf("?") + 1) : hash
+      );
 
       for (const name of acceptedNames) {
-        const n = validNumber(hashParams.get(name));
-        if (n !== null) return n;
+        const number = validate(hashParams.get(name));
+        if (number !== null) return number;
       }
 
-      // /masa/7 veya /table/7 biçimleri
+      const hashMatch = hash.match(
+        /(?:^|[/?&])(?:masa|table)\/?(\d{1,2})(?:\/|&|$)/i
+      );
+
+      if (hashMatch) {
+        const number = validate(hashMatch[1]);
+        if (number !== null) return number;
+      }
+
+      // Yol biçimleri: /masa/7, /table/7 veya /masa7
       let path = window.location.pathname;
-      try { path = decodeURIComponent(path); } catch (_) {}
 
-      const match = path.match(/^\/(?:masa|table)\/?(\d{1,2})\/?$/i);
-      if (match) return validNumber(match[1]);
+      try {
+        path = decodeURIComponent(path);
+      } catch (_) {}
 
-      const shortMatch = path.match(/^\/(?:masa|table)(\d{1,2})\/?$/i);
-      if (shortMatch) return validNumber(shortMatch[1]);
+      const pathMatch = path.match(
+        /\/(?:masa|table)\/?(\d{1,2})\/?$/i
+      );
+
+      if (pathMatch) {
+        const number = validate(pathMatch[1]);
+        if (number !== null) return number;
+      }
 
       return null;
     }
 
     function initializeTable() {
       state.table = getTableNumber();
+
       $("tableBadge").textContent = state.table !== null
         ? "🪑 Masa " + state.table
         : "Masa numarası bulunamadı — QR kodunu kontrol edin";
@@ -177,7 +199,9 @@
 
     function money(value) {
       const amount = Number(value);
+
       if (!Number.isFinite(amount)) return "0,00 TL";
+
       return amount.toLocaleString("tr-TR", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
@@ -185,27 +209,37 @@
     }
 
     function escapeText(value) {
-      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
       })[char]);
     }
 
-    // API'nin farklı JSON biçimlerini ve yaygın sütun isimlerini destekle.
+    // API yanıtındaki ürün dizisini bul.
     function normalizeProducts(data) {
       if (Array.isArray(data)) return data;
       if (!data || typeof data !== "object") return null;
 
       const candidates = [
-        data.products, data.menu, data.items, data.data,
-        data.results, data.meals, data.urunler
+        data.products,
+        data.menu,
+        data.items,
+        data.data,
+        data.results,
+        data.meals,
+        data.urunler
       ];
 
       for (const candidate of candidates) {
         if (Array.isArray(candidate)) return candidate;
+
         if (candidate && typeof candidate === "object") {
-          if (Array.isArray(candidate.products)) return candidate.products;
-          if (Array.isArray(candidate.items)) return candidate.items;
-          if (Array.isArray(candidate.data)) return candidate.data;
+          for (const key of ["products", "items", "data", "results"]) {
+            if (Array.isArray(candidate[key])) return candidate[key];
+          }
         }
       }
 
@@ -215,26 +249,56 @@
     function normalizeProduct(item, index) {
       if (!item || typeof item !== "object") return null;
 
-      const name = item.name ?? item.product_name ?? item.title ??
-        item.urun_adi ?? item.urun ?? item.ad ?? item.isim;
+      const name =
+        item.name ??
+        item.product_name ??
+        item.title ??
+        item.urun_adi ??
+        item.urun ??
+        item.ad ??
+        item.isim;
 
-      const priceValue = item.price ?? item.fiyat ?? item.unit_price ??
-        item.sale_price ?? item.price_tl;
+      const priceValue =
+        item.price ??
+        item.fiyat ??
+        item.unit_price ??
+        item.sale_price ??
+        item.price_tl;
 
-      const category = item.category ?? item.category_name ??
-        item.kategori ?? item.kategori_adi ?? "Diğer";
+      const category =
+        item.category ??
+        item.category_name ??
+        item.kategori ??
+        item.kategori_adi ??
+        "Diğer";
 
-      const numericPrice = Number(
-        typeof priceValue === "string"
-          ? priceValue.replace(",", ".").replace(/[^\d.-]/g, "")
-          : priceValue
-      );
+      if (name === undefined || name === null || String(name).trim() === "") {
+        return null;
+      }
 
-      if (name === undefined || name === null || String(name).trim() === "") return null;
-      if (priceValue === undefined || priceValue === null || String(priceValue).trim() === "") return null;
+      if (priceValue === undefined || priceValue === null || String(priceValue).trim() === "") {
+        return null;
+      }
+
+      // Hem 150,50 hem de 1.250,50 gibi fiyat biçimlerini destekle.
+      let priceText = String(priceValue).trim().replace(/[^\d,.-]/g, "");
+
+      if (priceText.includes(",") && priceText.includes(".")) {
+        priceText = priceText.replace(/\./g, "").replace(",", ".");
+      } else {
+        priceText = priceText.replace(",", ".");
+      }
+
+      const numericPrice = Number(priceText);
+
       if (!Number.isFinite(numericPrice) || numericPrice < 0) return null;
 
-      const id = item.id ?? item.product_id ?? item.urun_id ?? item.uuid ?? ("product-" + index);
+      const id =
+        item.id ??
+        item.product_id ??
+        item.urun_id ??
+        item.uuid ??
+        ("product-" + index);
 
       return {
         id: String(id),
@@ -246,7 +310,10 @@
 
     async function fetchMenuFrom(url) {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        REQUEST_TIMEOUT_MS
+      );
 
       try {
         const response = await fetch(url, {
@@ -270,11 +337,12 @@
         }
 
         const products = normalizeProducts(data);
+
         if (!products) {
           throw new Error(url + " yanıtında ürün listesi bulunamadı.");
         }
 
-        return products.map(normalizeProduct).filter(Boolean);
+        return products.map((item, index) => normalizeProduct(item, index)).filter(Boolean);
       } finally {
         clearTimeout(timeoutId);
       }
@@ -291,13 +359,15 @@
         try {
           const products = await fetchMenuFrom(url);
 
-          // Boş ürün listesi de geçerli API yanıtı olabilir.
           state.products = products;
           renderCategories();
           renderMenu();
 
           if (state.products.length === 0) {
-            showStatus("Menü API'sine ulaşıldı ancak gösterilecek ürün bulunamadı. Yönetici panelindeki ürünleri ve fiyatları kontrol edin.", true);
+            showStatus(
+              "API bağlantısı yanıt verdi ancak gösterilecek ürün bulunamadı. Ürün tablosunu ve fiyat alanlarını kontrol edin.",
+              true
+            );
             $("retryBtn").classList.remove("hidden");
           } else {
             hideStatus();
@@ -306,7 +376,7 @@
           return;
         } catch (error) {
           lastError = error;
-          console.error("Menü yükleme denemesi başarısız:", url, error);
+          console.error("Menü yükleme hatası:", url, error);
         }
       }
 
@@ -320,15 +390,12 @@
           : lastError.message)
         : "API adresleri yanıt vermedi.";
 
-      showStatus(
-        "Menü yüklenemedi. Sorun ürün kartlarında değil, menü API bağlantısında olabilir. Ayrıntı: " + detail,
-        true
-      );
+      showStatus("Menü yüklenemedi. Ayrıntı: " + detail, true);
       $("retryBtn").classList.remove("hidden");
     }
 
     function renderCategories() {
-      const categories = [...new Set(state.products.map(p => p.category))];
+      const categories = [...new Set(state.products.map(product => product.category))];
       const names = ["Tümü", ...categories];
 
       if (!names.includes(state.category)) state.category = "Tümü";
@@ -355,8 +422,12 @@
       const query = $("search").value.trim().toLocaleLowerCase("tr-TR");
 
       const filtered = state.products.filter(item => {
-        const categoryMatches = state.category === "Tümü" || item.category === state.category;
-        const searchable = (item.name + " " + item.category).toLocaleLowerCase("tr-TR");
+        const categoryMatches =
+          state.category === "Tümü" || item.category === state.category;
+
+        const searchable =
+          (item.name + " " + item.category).toLocaleLowerCase("tr-TR");
+
         return categoryMatches && searchable.includes(query);
       });
 
@@ -392,7 +463,12 @@
       if (!product) return;
 
       const old = state.cart.get(id);
-      state.cart.set(id, { product, quantity: old ? old.quantity + 1 : 1 });
+
+      state.cart.set(id, {
+        product,
+        quantity: old ? old.quantity + 1 : 1
+      });
+
       renderCart();
       showStatus(product.name + " sepete eklendi.", false, true);
     }
@@ -402,8 +478,12 @@
       if (!entry) return;
 
       entry.quantity += amount;
-      if (entry.quantity <= 0) state.cart.delete(id);
-      else state.cart.set(id, entry);
+
+      if (entry.quantity <= 0) {
+        state.cart.delete(id);
+      } else {
+        state.cart.set(id, entry);
+      }
 
       renderCart();
     }
@@ -429,8 +509,10 @@
         `).join("");
       }
 
-      const total = entries.reduce((sum, [, entry]) =>
-        sum + entry.product.price * entry.quantity, 0);
+      const total = entries.reduce(
+        (sum, [, entry]) => sum + entry.product.price * entry.quantity,
+        0
+      );
 
       $("cartTotal").textContent = money(total);
 
@@ -443,6 +525,7 @@
       });
     }
 
+    // Sipariş mesajını oluştur ve masa numarasını mutlaka ekle.
     function sendOrder() {
       const entries = [...state.cart.entries()];
 
@@ -451,62 +534,43 @@
         return;
       }
 
-      // Gönderim anında masa numarasını URL'den tekrar oku.
-      state.table = getTableNumber();
-      initializeTable();
+      const table = getTableNumber();
 
-      if (state.table === null) {
-        alert("Masa numarası bulunamadı. Lütfen masanızın QR kodunu tekrar okutun.");
+      if (table === null) {
+        initializeTable();
+        alert(
+          "Masa numarası bulunamadı.\n\n" +
+          "QR kodunun bağlantısı ?masa=7 biçiminde olmalıdır."
+        );
         return;
       }
 
-      const total = entries.reduce((sum, [, entry]) =>
-        sum + entry.product.price * entry.quantity, 0);
+      state.table = table;
+      $("tableBadge").textContent = "🪑 Masa " + table;
+
+      const total = entries.reduce(
+        (sum, [, entry]) => sum + entry.product.price * entry.quantity,
+        0
+      );
 
       const lines = [
         "TARİHİ RUMELİ ÇORBACISI - SİPARİŞ",
-        "MASA NUMARASI: " + state.table,
+        "MASA NUMARASI: " + table,
         "",
-        "Sipariş:"
+        "SİPARİŞ:"
       ];
 
-      entries.forEach(([, entry]) => {
+      for (const [, entry] of entries) {
         lines.push(
           entry.product.name + " x " + entry.quantity +
           " = " + money(entry.product.price * entry.quantity)
         );
-      });
+      }
 
       lines.push("", "TOPLAM: " + money(total));
 
       const note = $("customerNote").value.trim();
-      if (note) lines.push("", "SİPARİŞ NOTU: " + note);
 
-      lines.push("", "Sipariş masa " + state.table + " için hazırlanmıştır.");
-
-      const url = "https://wa.me/" + WHATSAPP_NUMBER +
-        "?text=" + encodeURIComponent(lines.join("\n"));
-
-      window.location.href = url;
-    }
-
-    function initializePage() {
-      // Masa numarasını menü API'sini beklemeden hemen göster.
-      initializeTable();
-
-      $("search").addEventListener("input", renderMenu);
-      $("orderBtn").addEventListener("click", sendOrder);
-      $("retryBtn").addEventListener("click", loadMenu);
-
-      renderCart();
-      loadMenu();
-    }
-
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", initializePage);
-    } else {
-      initializePage();
-    }
-  </script>
-</body>
-</html>
+      if (note) {
+        lines.push("", "SİPARİŞ NOTU: " + note);
+  
