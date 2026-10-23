@@ -201,7 +201,7 @@
       white-space: nowrap;
     }
 
-    .add-btn, .primary-btn {
+    .add-btn {
       border: 0;
       border-radius: 9px;
       padding: 11px 14px;
@@ -210,9 +210,7 @@
       font-weight: bold;
     }
 
-    .add-btn:active, .primary-btn:active {
-      transform: scale(.98);
-    }
+    .add-btn:active { transform: scale(.98); }
 
     .cart {
       margin-top: 28px;
@@ -307,11 +305,6 @@
       font-weight: bold;
     }
 
-    .order-btn:disabled {
-      opacity: .65;
-      cursor: not-allowed;
-    }
-
     .empty {
       padding: 22px;
       border: 1px dashed var(--line);
@@ -346,9 +339,7 @@
   <header>
     <h1 class="brand">Tarihi Rumeli Çorbacısı</h1>
     <p class="subtitle">Lezzetin gelenekle buluştuğu yer</p>
-    <div id="tableBadge" class="table-badge">
-      Masa numarası okunuyor...
-    </div>
+    <div id="tableBadge" class="table-badge">Masa numarası okunuyor...</div>
   </header>
 
   <main>
@@ -381,10 +372,7 @@
         <span id="cartTotal">0,00 TL</span>
       </div>
 
-      <label class="customer-note-label" for="customerNote">
-        Sipariş notunuz
-      </label>
-
+      <label class="customer-note-label" for="customerNote">Sipariş notunuz</label>
       <textarea
         id="customerNote"
         class="customer-note"
@@ -407,9 +395,7 @@
     </section>
   </main>
 
-  <footer>
-    Tarihi Rumeli Çorbacısı · Afiyet olsun!
-  </footer>
+  <footer>Tarihi Rumeli Çorbacısı · Afiyet olsun!</footer>
 
   <script>
     "use strict";
@@ -431,14 +417,10 @@
 
     const $ = (id) => document.getElementById(id);
 
-    function readTableFromParams(params) {
-      const acceptedNames = [
-        "masa",
-        "table",
-        "masano",
-        "masa_no",
-        "m"
-      ];
+    // URL'den masa numarasını oku.
+    function getTableNumber() {
+      const params = new URLSearchParams(window.location.search);
+      const acceptedNames = ["masa", "table", "masano", "masa_no", "m"];
 
       for (const [key, value] of params.entries()) {
         if (!acceptedNames.includes(key.toLowerCase())) continue;
@@ -446,66 +428,45 @@
 
         const number = Number(value);
 
-        if (
-          Number.isSafeInteger(number) &&
-          number >= 1 &&
-          number <= 30
-        ) {
+        if (Number.isInteger(number) && number >= 1 && number <= 30) {
           return number;
         }
       }
 
-      return null;
-    }
-
-    // Desteklenen bağlantılar:
-    // ?masa=5, ?table=5, ?masaNo=5
-    // /masa/5, /masa5, /table/5, /table5
-    // #masa=5
-    function getTableNumber() {
-      const fromQuery = readTableFromParams(
-        new URLSearchParams(window.location.search)
-      );
-
-      if (fromQuery !== null) return fromQuery;
-
+      // URL'nin hash kısmı da desteklenir: #masa=7
       const rawHash = window.location.hash.replace(/^#/, "");
-      const hashQuery = rawHash.includes("?")
-        ? rawHash.slice(rawHash.indexOf("?") + 1)
-        : rawHash;
-
-      const fromHash = readTableFromParams(
-        new URLSearchParams(hashQuery)
+      const hashParams = new URLSearchParams(
+        rawHash.includes("?")
+          ? rawHash.slice(rawHash.indexOf("?") + 1)
+          : rawHash
       );
 
-      if (fromHash !== null) return fromHash;
+      for (const [key, value] of hashParams.entries()) {
+        if (!acceptedNames.includes(key.toLowerCase())) continue;
+        if (!/^\d{1,2}$/.test(value)) continue;
 
+        const number = Number(value);
+
+        if (Number.isInteger(number) && number >= 1 && number <= 30) {
+          return number;
+        }
+      }
+
+      // /masa/7, /masa7, /table/7, /table7 biçimleri
       let path = window.location.pathname;
 
       try {
         path = decodeURIComponent(path);
       } catch (error) {
-        console.warn("URL yolu çözümlenemedi:", error);
+        console.warn("URL yolu okunamadı:", error);
       }
 
-      const patterns = [
-        /^\/(?:masa|table)\/(\d{1,2})\/?$/i,
-        /^\/(?:masa|table)(\d{1,2})\/?$/i
-      ];
+      const match = path.match(/^\/(?:masa|table)\/?(\d{1,2})\/?$/i);
 
-      for (const pattern of patterns) {
-        const match = path.match(pattern);
-
-        if (match) {
-          const number = Number(match[1]);
-
-          if (
-            Number.isSafeInteger(number) &&
-            number >= 1 &&
-            number <= 30
-          ) {
-            return number;
-          }
+      if (match) {
+        const number = Number(match[1]);
+        if (Number.isInteger(number) && number >= 1 && number <= 30) {
+          return number;
         }
       }
 
@@ -534,7 +495,6 @@
 
     function money(value) {
       const amount = Number(value);
-
       if (!Number.isFinite(amount)) return "0,00 TL";
 
       return amount.toLocaleString("tr-TR", {
@@ -563,7 +523,6 @@
 
     async function fetchMenuFrom(url) {
       const controller = new AbortController();
-
       const timeoutId = setTimeout(
         () => controller.abort(),
         REQUEST_TIMEOUT_MS
@@ -578,9 +537,7 @@
         });
 
         if (!response.ok) {
-          throw new Error(
-            url + " adresi HTTP " + response.status + " yanıtı verdi."
-          );
+          throw new Error(url + " adresi HTTP " + response.status + " yanıtı verdi.");
         }
 
         const text = await response.text();
@@ -614,7 +571,7 @@
         try {
           const rawProducts = await fetchMenuFrom(url);
 
-          const validProducts = rawProducts
+          state.products = rawProducts
             .filter((item) =>
               item &&
               item.id !== undefined &&
@@ -634,7 +591,6 @@
               price: Number(item.price)
             }));
 
-          state.products = validProducts;
           loaded = true;
           break;
         } catch (error) {
@@ -653,8 +609,7 @@
           : (lastError ? lastError.message : "Bilinmeyen hata.");
 
         showStatus(
-          "Menü yüklenemedi. İnternet bağlantısını ve API adresini kontrol edin. " +
-          detail,
+          "Menü yüklenemedi. İnternet bağlantısını ve API adresini kontrol edin. " + detail,
           true
         );
         return;
@@ -677,9 +632,7 @@
 
       const names = ["Tümü", ...categoryNames];
 
-      if (!names.includes(state.category)) {
-        state.category = "Tümü";
-      }
+      if (!names.includes(state.category)) state.category = "Tümü";
 
       $("categories").innerHTML = names.map((name) => `
         <button
@@ -700,9 +653,7 @@
     }
 
     function renderMenu() {
-      const query = $("search").value
-        .trim()
-        .toLocaleLowerCase("tr-TR");
+      const query = $("search").value.trim().toLocaleLowerCase("tr-TR");
 
       const filtered = state.products.filter((item) => {
         const categoryMatches =
@@ -732,7 +683,6 @@
         <article class="product">
           <span class="product-category">${escapeText(item.category)}</span>
           <h3>${escapeText(item.name)}</h3>
-
           <div class="product-bottom">
             <span class="price">${money(item.price)}</span>
             <button
@@ -746,9 +696,7 @@
       `).join("");
 
       $("menu").querySelectorAll("[data-add]").forEach((button) => {
-        button.addEventListener("click", () => {
-          addToCart(button.dataset.add);
-        });
+        button.addEventListener("click", () => addToCart(button.dataset.add));
       });
     }
 
@@ -796,16 +744,13 @@
               <strong>${escapeText(entry.product.name)}</strong><br>
               <small>${money(entry.product.price * entry.quantity)}</small>
             </div>
-
             <div class="quantity">
               <button
                 type="button"
                 aria-label="${escapeText(entry.product.name)} miktarını azalt"
                 data-minus="${escapeText(id)}"
               >−</button>
-
               <span aria-label="Adet">${entry.quantity}</span>
-
               <button
                 type="button"
                 aria-label="${escapeText(entry.product.name)} miktarını artır"
@@ -817,8 +762,7 @@
       }
 
       const total = entries.reduce(
-        (sum, [, entry]) =>
-          sum + entry.product.price * entry.quantity,
+        (sum, [, entry]) => sum + entry.product.price * entry.quantity,
         0
       );
 
@@ -837,4 +781,24 @@
       });
     }
 
-    // DÜZELTİL
+    // Masa numarasını WhatsApp mesajına ekleyen sipariş fonksiyonu.
+    function sendOrder() {
+      const entries = [...state.cart.entries()];
+
+      if (entries.length === 0) {
+        alert("Lütfen önce sepetinize ürün ekleyin.");
+        return;
+      }
+
+      // Her siparişte URL'yi yeniden kontrol et.
+      const tableNumber = getTableNumber();
+
+      if (tableNumber === null) {
+        alert(
+          "Masa numarası bulunamadı.\n" +
+          "Lütfen masanızın QR kodunu tekrar okutun."
+        );
+        return;
+      }
+
+      state.tab
